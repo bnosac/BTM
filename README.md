@@ -35,65 +35,78 @@ x <- subset(brussels_reviews_anno, language == "nl")
 x <- subset(x, xpos %in% c("NN", "NNP", "NNS"))
 
 ## Building the model
-model  <- BTM(x, k = 4, beta = 0.01, iter = 1000, trace = 10)
+set.seed(321)
+model  <- BTM(x, k = 4, beta = 0.01, iter = 1000, trace = 100)
 
 ## Inspect the model - topic frequency + conditional term probabilities
 model$theta
-[1] 0.1897673 0.2346002 0.3411188 0.2345138
+[1] 0.3353083 0.2023678 0.2043752 0.2579486
 
 topicterms <- terms(model, top_n = 10)
 topicterms
 [[1]]
-                  token probability
-appartement appartement 0.055565224
-buurt             buurt 0.024285224
-Brussel         Brussel 0.012910678
-slaapkamer   slaapkamer 0.012171333
-badkamer       badkamer 0.011773223
-centrum         centrum 0.009612060
-foto's           foto's 0.009384569
-locatie         locatie 0.008986460
-aankomst       aankomst 0.008702096
-ontvangst     ontvangst 0.008417732
+         token probability
+1  appartement 0.049776587
+2      Brussel 0.024257148
+3        kamer 0.016732859
+4        buurt 0.014101989
+5      centrum 0.013523198
+6          bed 0.011418502
+7     badkamer 0.010260919
+8       mensen 0.010208302
+9      locatie 0.010103067
+10  slaapkamer 0.009682128
 
 [[2]]
-                  token probability
-huis               huis 0.035522281
-appartement appartement 0.034648039
-Brussel         Brussel 0.026319737
-buurt             buurt 0.019141752
-stad               stad 0.017945422
-centrum         centrum 0.017577320
-kamer             kamer 0.015092633
-aanrader       aanrader 0.013390162
-contact         contact 0.010445348
-locatie         locatie 0.009110979
+         token probability
+1  appartement 0.076861701
+2      Brussel 0.041358005
+3      centrum 0.020945280
+4        buurt 0.018854591
+5     verblijf 0.011784262
+6      minuten 0.011518175
+7     aanrader 0.010187736
+8     aankomst 0.010035686
+9         stad 0.009465498
+10     locatie 0.009389473
 
 [[3]]
-                  token probability
-appartement appartement 0.073085849
-Brussel         Brussel 0.045010116
-centrum         centrum 0.019023446
-verblijf       verblijf 0.017694042
-buurt             buurt 0.016522901
-aanrader       aanrader 0.011236940
-kamer             kamer 0.011205288
-locatie         locatie 0.011078678
-super             super 0.010857111
-wijk               wijk 0.008229956
+         token probability
+1  appartement  0.04586403
+2      Brussel  0.02829498
+3        kamer  0.01957048
+4      centrum  0.01668900
+5         huis  0.01592861
+6     verblijf  0.01352737
+7        buurt  0.01288704
+8      locatie  0.01136626
+9         stad  0.01032572
+10    badkamer  0.01000555
 
 [[4]]
-                  token probability
-appartement appartement 0.061358004
-Brussel         Brussel 0.036916252
-centrum         centrum 0.018550415
-kamer             kamer 0.018090119
-badkamer       badkamer 0.014775983
-verblijf       verblijf 0.014775983
-bed                 bed 0.011507877
-locatie         locatie 0.011277728
-keuken           keuken 0.009620660
-aanrader       aanrader 0.009114334
+         token probability
+1  appartement  0.05632430
+2      Brussel  0.03434098
+3         huis  0.02144649
+4        buurt  0.02081968
+5     verblijf  0.01732742
+6      centrum  0.01477539
+7        kamer  0.01423811
+8     aanrader  0.01356653
+9         stad  0.01222335
+10 loopafstand  0.01101449
 
 scores <- terms(predict, newdata = x)
+```
+
+Make a specific topic called the background
+
+```
+# If you set background to TRUE
+# The first topic is set to a background topic that equals to the empirical word dsitribution. 
+# This can be used to filter out common words. Defaults to FALSE.
+set.seed(321)
+model  <- BTM(x, k = 5, beta = 0.01, background = TRUE, iter = 1000, trace = 100)
+topicterms <- terms(model, top_n = 5)
+topicterms
 ```
