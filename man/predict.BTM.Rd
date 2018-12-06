@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{an object of class BTM as returned by \code{\link{BTM}}}
 
-\item{newdata}{a tokenised data frame containing one row per token with columns doc_id (a document identifier) and token (of type character with the token)}
+\item{newdata}{a tokenised data frame containing one row per token with columns doc_id (a context identifier e.g. a tweet id, a document id, a sentence id) and token (of type character with the token)}
 
 \item{type}{character string with the type of prediction. 
 Either one of 'sum_b', 'sub_w' or 'mix'. Default is set to 'sum_b' as indicated in the paper, 
@@ -18,8 +18,9 @@ indicating to sum over the the expectation of the topic proportions of biterms g
 \item{...}{not used}
 }
 \value{
-a matrix containing one row per document which contains words part of the dictionary of the BTM model and K columns, one for each topic. 
-It contains P(z|d), the probability of the topic given the biterms.
+a matrix containing one row per doc_id (context identifier)
+which contains words part of the dictionary of the BTM model and K columns, one for each topic. 
+It contains P(z|d), the probability of the topic given the biterms for each context identifier.
 }
 \description{
 Classify new text alongside the biterm topic model.\cr
