@@ -65,8 +65,8 @@ SEXP btm(Rcpp::CharacterVector x, int K, int W, double alpha, double beta, int i
     Rcpp::Named("alpha") = alpha,
     Rcpp::Named("beta") = beta,
     Rcpp::Named("iter") = iter,
-    Rcpp::Named("topic") = p_z,
-    Rcpp::Named("token") = pw_z
+    Rcpp::Named("theta") = p_z,
+    Rcpp::Named("phi") = pw_z
   );
   return out;
 }
@@ -75,18 +75,18 @@ SEXP btm(Rcpp::CharacterVector x, int K, int W, double alpha, double beta, int i
 Rcpp::NumericMatrix btm_infer(const Rcpp::List & model, Rcpp::CharacterVector x, std::string type) {
   int K = Rcpp::as<int>(model["K"]);
   int W = Rcpp::as<int>(model["W"]);
-  Rcpp::NumericVector topics = Rcpp::as<Rcpp::NumericVector>(model["topic"]);
-  Rcpp::NumericMatrix words = Rcpp::as<Rcpp::NumericMatrix>(model["token"]);
+  Rcpp::NumericVector theta = Rcpp::as<Rcpp::NumericVector>(model["theta"]);
+  Rcpp::NumericMatrix phi = Rcpp::as<Rcpp::NumericMatrix>(model["phi"]);
   Rcpp::NumericMatrix scores(x.size(), K);
   
   Pvec<double> pz(K);
   Pmat<double> pw_z(K, W);
-  for (int i = 0; i < topics.size(); ++i){
-    pz[i] = topics(i);
+  for (int i = 0; i < theta.size(); ++i){
+    pz[i] = theta(i);
   }
   for (int k = 0; k < K; k++) {
     for (int w = 0; w < W; w++){
-      pw_z[k][w] = words(w, k);
+      pw_z[k][w] = phi(w, k);
     }
   }
   Infer inf(type, K);

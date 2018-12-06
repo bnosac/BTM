@@ -13,7 +13,7 @@
 #' \url{https://github.com/xiaohuiyan/BTM}
 #' @param data a tokenised data frame containing one row per token with columns doc_id (a document identifier) and token (of type character with the token)
 #' @param k integer with the number of topics to identify
-#' @param alpha numeric, indicating the symmetric dirichlet prior probability of a topic P(z). Defaults to 1.
+#' @param alpha numeric, indicating the symmetric dirichlet prior probability of a topic P(z). Defaults to 50/k.
 #' @param beta numeric, indicating the symmetric dirichlet prior probability of a word given the topic P(w|z). Defaults to 0.1.
 #' @param iter integer with the number of iterations of Gibbs sampling
 #' @param window integer with the window size for biterm extraction. Defaults to 15.
@@ -25,8 +25,8 @@
 #' \item{alpha: the symmetric dirichlet prior probability of a topic P(z)}
 #' \item{beta: the symmetric dirichlet prior probability of a word given the topic P(w|z)}
 #' \item{iter: the number of iterations of Gibbs sampling}
-#' \item{topic: a vector with the topic probability p(z) which is determinated by the overall proportions of biterms in it}
-#' \item{token: a matrix of dimension W x K with one row for each token in the data. This matrix contains the probability of the token given the topic P(w|z).
+#' \item{theta: a vector with the topic probability p(z) which is determinated by the overall proportions of biterms in it}
+#' \item{phi: a matrix of dimension W x K with one row for each token in the data. This matrix contains the probability of the token given the topic P(w|z).
 #' the rownames of the matrix indicate the token w}
 #' }
 #' @export
@@ -36,8 +36,9 @@
 #' x <- subset(brussels_reviews_anno, language == "nl")
 #' x <- subset(x, xpos %in% c("NN", "NNP", "NNS"))
 #' model  <- BTM(x, k = 5, alpha = 1, beta = 0.01, iter = 10, trace = TRUE)
+#' model
 #' scores <- predict(model, newdata = x)
-BTM <- function(data, k = 5, alpha = 1, beta = 0.01, iter = 10, window = 15, trace = FALSE){
+BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 10, window = 15, trace = FALSE){
   word <- doc_id <- NULL
   trace <- as.integer(trace)
   stopifnot(k >= 1)
@@ -60,9 +61,18 @@ BTM <- function(data, k = 5, alpha = 1, beta = 0.01, iter = 10, window = 15, tra
   model <- btm(x$txt, K = k, W = voc, alpha = alpha, beta = beta, iter = iter, win = window, trace = as.integer(trace))
   
   ## make sure integer numbers are back tokens again
-  rownames(model$token) <- vocabulary$token
+  rownames(model$phi) <- vocabulary$token
   class(model) <- "BTM"
   model
+}
+
+#' @export
+print.BTM <- function(x, ...){
+  cat("Biterm Topic Model", sep = "\n")
+  cat(sprintf("  trained with %s Gibss iterations, alpha: %s, beta: %s", x$iter, x$alpha, x$beta), sep = "\n")
+  cat(sprintf("  topics: %s", x$K), sep = "\n")
+  cat(sprintf("  size of the token vocabulary: %s", x$W), sep = "\n")
+  cat(sprintf("  topic distribution theta: %s", paste(round(x$theta, 3), collapse = " ")), sep = "\n")
 }
 
 #' @title Predict function for a Biterm Topic Model
@@ -95,11 +105,11 @@ predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...)
   type <- match.arg(type)
   stopifnot(inherits(newdata, "data.frame"))
   stopifnot(all(c("doc_id", "token") %in% colnames(newdata)))
-  newdata <- newdata[newdata$token %in% rownames(object$token), ]
+  newdata <- newdata[newdata$token %in% rownames(object$phi), ]
   newdata <- data.table::setDT(newdata)
   newdata$word <- udpipe::txt_recode(newdata$token, 
-                                     from = rownames(object$token), 
-                                     to = seq_along(rownames(object$token))-1L)
+                                     from = rownames(object$phi), 
+                                     to = seq_along(rownames(object$phi))-1L)
   newdata <- newdata[, list(txt = paste(word, collapse = " ")), by = list(doc_id)]
   scores <- btm_infer(object, newdata$txt, type)
   rownames(scores) <- newdata$doc_id
@@ -123,10 +133,11 @@ predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...)
 #' model  <- BTM(x, k = 5, iter = 5, trace = TRUE)
 #' terms(model)
 terms.BTM <- function(x, threshold = +Inf, top_n = 5, ...){
-  apply(x$token, MARGIN=2, FUN=function(x){
+  apply(x$phi, MARGIN=2, FUN=function(x){
     x <- data.frame(token = names(x), probability = x)
     x <- x[x$probability < threshold, ]
     x <- x[order(x$probability, decreasing = TRUE), ]
+    rownames(x) <- NULL
     head(x, top_n)
   })
 }

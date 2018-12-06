@@ -4,7 +4,7 @@
 \alias{BTM}
 \title{Construct a Biterm Topic Model on Short Text}
 \usage{
-BTM(data, k = 5, alpha = 1, beta = 0.01, iter = 10, window = 15,
+BTM(data, k = 5, alpha = 50/k, beta = 0.01, iter = 10, window = 15,
   trace = FALSE)
 }
 \arguments{
@@ -12,7 +12,7 @@ BTM(data, k = 5, alpha = 1, beta = 0.01, iter = 10, window = 15,
 
 \item{k}{integer with the number of topics to identify}
 
-\item{alpha}{numeric, indicating the symmetric dirichlet prior probability of a topic P(z). Defaults to 1.}
+\item{alpha}{numeric, indicating the symmetric dirichlet prior probability of a topic P(z). Defaults to 50/k.}
 
 \item{beta}{numeric, indicating the symmetric dirichlet prior probability of a word given the topic P(w|z). Defaults to 0.1.}
 
@@ -30,8 +30,8 @@ an object of class BTM which is a list containing
 \item{alpha: the symmetric dirichlet prior probability of a topic P(z)}
 \item{beta: the symmetric dirichlet prior probability of a word given the topic P(w|z)}
 \item{iter: the number of iterations of Gibbs sampling}
-\item{topic: a vector with the topic probability p(z) which is determinated by the overall proportions of biterms in it}
-\item{token: a matrix of dimension W x K with one row for each token in the data. This matrix contains the probability of the token given the topic P(w|z).
+\item{theta: a vector with the topic probability p(z) which is determinated by the overall proportions of biterms in it}
+\item{phi: a matrix of dimension W x K with one row for each token in the data. This matrix contains the probability of the token given the topic P(w|z).
 the rownames of the matrix indicate the token w}
 }
 }
@@ -53,6 +53,7 @@ data("brussels_reviews_anno", package = "udpipe")
 x <- subset(brussels_reviews_anno, language == "nl")
 x <- subset(x, xpos \%in\% c("NN", "NNP", "NNS"))
 model  <- BTM(x, k = 5, alpha = 1, beta = 0.01, iter = 10, trace = TRUE)
+model
 scores <- predict(model, newdata = x)
 }
 \references{
