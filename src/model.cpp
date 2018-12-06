@@ -33,7 +33,7 @@ void Model::run(string doc_pt, string res_dir) {
 }
 
 void Model::model_init() {
-  srand(time(NULL));
+  //srand(time(NULL));
   // random initialize
   for (vector<Biterm>::iterator b = bs.begin(); b != bs.end(); ++b) {
 	int k = Sampler::uni_sample(K);

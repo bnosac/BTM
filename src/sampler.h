@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 #ifndef _SAMPLER_H
 #define _SAMPLER_H
 #include <cstdlib>
@@ -9,18 +10,20 @@ using namespace std;
 namespace Sampler {
 
 inline void init() {
-	srand(1);
+	//srand(1);
 } //time(NULL));}
 
 // uniform sample Mult(1/K), result [0, K-1]
 inline int uni_sample(int K) {
-	int k = rand() % K;
+	//int k = rand() % K;
+  int k = static_cast<int>(floor(R::runif(0, 1) * K));
 	return k;
 }
 
 // sample from [0,1)
 inline double uni_sample() {
-	double t = rand() % 10000 / 10000;
+	//double t = rand() % 10000 / 10000;
+	double t = R::runif(0, 1);
 	return t;
 }
 
@@ -30,7 +33,8 @@ inline int mult_sample(vector<double> p) {
 	for (int i = 1; i < K; i++)
 		p[i] += p[i - 1];
 
-	double u = double(rand()) / RAND_MAX;
+	//double u = double(rand()) / RAND_MAX;
+	double u = R::runif(0, 1);
 	int k;  						// record sampled index
 	for (k = 0; k < K; k++)
 		if (p[k] >= u * p[K - 1])
@@ -44,7 +48,8 @@ inline int mult_sample(vector<double> p) {
 
 // p is p(1)
 inline bool Bern_sample(float p) {
-	double u = double(rand()) / RAND_MAX;
+	//double u = double(rand()) / RAND_MAX;
+  double u = R::runif(0, 1);
 	return (u < p);
 }
 
