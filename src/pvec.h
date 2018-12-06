@@ -1,6 +1,7 @@
 /*
  * Positive vector
  */
+#include <Rcpp.h>
 #ifndef _PVEC_H
 #define _PVEC_H
 #include <vector>
@@ -15,9 +16,11 @@
 #include <cstdlib>
 #include <algorithm> 
 
+/*
 #define EXIT_ERR( s1, s2 ) {printf("[Error] %s%s\n", s1, s2);	\
 	exit(EXIT_FAILURE);}
-
+*/
+ 
 using namespace std;
 
 template<class T>
@@ -32,14 +35,14 @@ public:
 
   template<class T2>
   Pvec(const vector<T2>& v) {
-	for (int i = 0; i < p.size(); ++i)
+	for (int i = 0; i < (int)p.size(); ++i)
 	  p[i] = v[i];
   }
 
   template<class T2>
   Pvec(const Pvec<T2>& v) {
 	p.resize(v.size());
-	for (int i = 0; i < v.size(); ++i)
+	for (int i = 0; i < (int)v.size(); ++i)
 	  p[i] = v[i];
   }
 
@@ -99,7 +102,7 @@ public:
 	p.clear();
 	ifstream rf(inf.c_str());
 	if (!rf) 
-	  EXIT_ERR("file not find:", inf.c_str());
+	  Rcpp::stop("file not find:", inf.c_str());
 	loadFileStream(rf);
   }
 
@@ -131,7 +134,7 @@ public:
   
 	int K = p.size();
 	// avoid numerical problem
-	for( size_t i = 0 ; i < K ; ++i ) {
+	for( size_t i = 0 ; i < (size_t)K ; ++i ) {
 	  p[i] = (p[i] + smoother)/(s + K*smoother);
 	}
   }
@@ -163,8 +166,8 @@ public:
   }
   
   T &operator[](int i) {
-	if (i >= p.size())
-	  cout << "ERR: index=" << i << ", size=" << p.size() << endl;
+	if (i >= (int)p.size())
+	  Rcpp::Rcout << "ERR: index=" << i << ", size=" << p.size() << endl;
 	assert(i < p.size());
 	return p[i]; 
   }
@@ -314,8 +317,8 @@ public:
   void write(const string& pt, char delim = ' ') {
 	ofstream wf(pt.c_str());
 	if (!wf) {
-	  cout << "Path not exists:" << pt << endl;
-	  exit(-1);
+	  Rcpp::Rcout << "Path not exists:" << pt << endl;
+	  Rcpp::stop(pt);
 	}
   
 	wf << str(delim);

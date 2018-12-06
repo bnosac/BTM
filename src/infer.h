@@ -13,8 +13,8 @@ using namespace std;
 class Infer {
 //private:
 public:
-  int K;
   string type;			// infer type
+  int K;
   
   string dfile;			// inference docs
   Pvec<double> pz;	    // p(z) = theta

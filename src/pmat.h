@@ -4,6 +4,7 @@
  *  Created on: 2012-7-31
  *      Author: xhcloud@gmail.com
  */
+#include <Rcpp.h>
 #ifndef _PMAT_H
 #define _PMAT_H
 
@@ -20,8 +21,10 @@
 
 #include "pvec.h"
 
+/*
 #define EXIT_ERR(s1, s2) {printf("[Error] %s%s\n", s1, s2);	\
 	exit(EXIT_FAILURE);}
+*/
 
 using namespace std;
 
@@ -90,7 +93,7 @@ public:
   void load(const string& inf) {
 	ifstream rf(inf.c_str());
 	if (!rf) 
-	  EXIT_ERR("file not find:", inf.c_str());
+	  Rcpp::stop("file not find:", inf.c_str());
   
 	loadFileStream(rf);
   }
@@ -108,7 +111,7 @@ public:
   void load_tmat(const string& inf) {
 	ifstream rf(inf.c_str());
 	if (!rf) 
-	  EXIT_ERR("file not find:", inf.c_str());
+	  Rcpp::stop("file not find:", inf.c_str());
   
 	try {
 	  string line;
@@ -119,7 +122,7 @@ public:
 	  }
 	}
 	catch (...) {
-	  EXIT_ERR("Err file:", inf.c_str());
+	  Rcpp::stop("Err file:", inf.c_str());
 	}
   }
   
@@ -128,8 +131,8 @@ public:
   const int cols() const {return rows()?array[0].size():0;}
 
   Pvec<T> &operator[] (int m){
-	if (m >= array.size())
-	  cout << "ERR Row(i):" << m << ' ' << array.size() << endl;
+	if (m >= (int)array.size())
+	  Rcpp::Rcout << "ERR Row(i):" << m << ' ' << array.size() << endl;
 	return array[m];
   }
 
@@ -336,8 +339,8 @@ public:
   void write(const string& pt) {
 	ofstream wf(pt.c_str());
 	if (!wf) {
-	  cout << "Path not exists:" << pt << endl;
-	  exit(-1);
+	  Rcpp::Rcout << "Path not exists:" << pt << endl;
+	  Rcpp::stop(pt);
 	}
   
 	for (int i=0; i<rows(); ++i) 

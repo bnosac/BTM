@@ -34,10 +34,10 @@ SEXP btm(Rcpp::CharacterVector x, int K, int W, double alpha, double beta, int i
   for (int it = 1; it < iter + 1; ++it) {
     if(trace > 0){
       if ((it-1) % trace == 0){
-        Rcpp::Rcout << Rcpp::as<std::string>(format_posixct(sys_time())) << " Start Gibbs sampling iteration " << it << endl;  
+        //Rcpp::Rcout << Rcpp::as<std::string>(format_posixct(sys_time())) << " Start Gibbs sampling iteration " << it << endl;  
       }  
     }
-    for (int b = 0; b < model->bs.size(); ++b) {
+    for (unsigned int b = 0; b < model->bs.size(); ++b) {
       model->update_biterm(model->bs[b]);
     }
     Rcpp::checkUserInterrupt();
@@ -49,7 +49,7 @@ SEXP btm(Rcpp::CharacterVector x, int K, int W, double alpha, double beta, int i
   pz.normalize(alpha);
   
   std::vector<double> p_z;
-  for (int i = 0; i < pz.size(); ++i){
+  for (unsigned int i = 0; i < pz.size(); ++i){
     p_z.push_back(pz[i]);
   }
   Rcpp::NumericMatrix pw_z(W, K); // p(w|z) = phi, size K * W

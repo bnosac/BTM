@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -9,14 +10,14 @@
 void Infer::run(string docs_pt, string model_dir) {
   load_para(model_dir);
   
-  cout << "Infer p(z|d) for docs in: " << docs_pt << endl;
+  Rcpp::Rcout << "Infer p(z|d) for docs in: " << docs_pt << endl;
   ifstream rf(docs_pt.c_str());
   assert(rf);
 
   string pt = model_dir + "k" + str_util::itos(K) + ".pz_d";
   ofstream wf(pt.c_str());
   assert(wf);
-  cout << "write p(z|d): " << pt << endl;
+  Rcpp::Rcout << "write p(z|d): " << pt << endl;
   
   string line;
   while (getline(rf, line)) {
@@ -30,12 +31,12 @@ void Infer::run(string docs_pt, string model_dir) {
 
 void Infer::load_para(string model_dir) {
   string pt = model_dir + "k" + str_util::itos(K) + ".pz";
-  cout << "load p(z):" << pt <<endl;
+  Rcpp::Rcout << "load p(z):" << pt <<endl;
   pz.loadFile(pt);
   assert(abs(pz.sum() - 1) < 1e-4);
  
   string pt2 = model_dir + "k" + str_util::itos(K) + ".pw_z";
-  cout << "load p(w|z):" << pt2 <<endl;
+  Rcpp::Rcout << "load p(w|z):" << pt2 <<endl;
   pw_z.load(pt2);
   printf("n(z)=%d, n(w)=%d\n", pw_z.rows(), pw_z.cols());
   assert(pw_z.rows() > 0 && abs(pw_z[0].sum() - 1) < 1e-4);
@@ -49,8 +50,8 @@ void Infer::doc_infer(const Doc& doc, Pvec<double>& pz_d) {
   else if (type == "mix")
 	doc_infer_mix(doc, pz_d);
   else {
-	cout << "[Err] unkown infer type:" << type << endl;
-	exit(1);
+  Rcpp::Rcout << "[Err] unkown infer type:" << type << endl;
+  Rcpp::stop(type);
   }
 }
 
@@ -70,7 +71,7 @@ void Infer::doc_infer_sum_b(const Doc& doc, Pvec<double>& pz_d) {
 	doc.gen_biterms(bs);
 
 	int W = pw_z.cols();	
-	for (int b = 0; b < bs.size(); ++b) {	  
+	for (int b = 0; b < (int)bs.size(); ++b) {	  
 	  int w1 = bs[b].get_wi();
 	  int w2 = bs[b].get_wj();
 
@@ -101,7 +102,7 @@ void Infer::doc_infer_sum_w(const Doc& doc, Pvec<double>& pz_d) {
   int W = pw_z.cols();	
   const vector<int>& ws = doc.get_ws();
   
-  for (int i = 0; i < ws.size(); ++i) {
+  for (int i = 0; i < (int)ws.size(); ++i) {
 	int w = ws[i];
 	if (w >= W) continue;
 	
@@ -126,7 +127,7 @@ void Infer::doc_infer_mix(const Doc& doc, Pvec<double>& pz_d) {
 
   const vector<int>& ws = doc.get_ws();
   int W = pw_z.cols();
-  for (int i = 0; i < ws.size(); ++i) {
+  for (int i = 0; i < (int)ws.size(); ++i) {
 	int w = ws[i];
 	if (w >= W) continue;
 

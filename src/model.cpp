@@ -1,3 +1,4 @@
+#include <Rcpp.h>
 #include <cassert>
 #include <iostream>
 #include <string>
@@ -15,12 +16,12 @@ void Model::run(string doc_pt, string res_dir) {
 
   model_init();
 
-  cout << "Begin iteration" << endl;
+  Rcpp::Rcout << "Begin iteration" << endl;
   string out_dir = res_dir + "k" + str_util::itos(K) + ".";
   for (int it = 1; it < n_iter + 1; ++it) {
-	cout << "\riter " << it << '/' << n_iter;
+  Rcpp::Rcout << "\riter " << it << '/' << n_iter;
 	fflush(stdout);
-	for (int b = 0; b < bs.size(); ++b) {
+	for (int b = 0; b < (int)bs.size(); ++b) {
 	  update_biterm(bs[b]);
 	}
 	
@@ -43,11 +44,11 @@ void Model::model_init() {
 // input, each line is a doc
 // format: wid  wid  wid ...
 void Model::load_docs(string dfile) {
-  cout << "load docs: " << dfile << endl;
+  Rcpp::Rcout << "load docs: " << dfile << endl;
   ifstream rf( dfile.c_str() );
   if (!rf) {
-	cout << "file not find:" << dfile << endl;
-	exit(-1);
+  Rcpp::Rcout << "file not find:" << dfile << endl;
+  Rcpp::stop(dfile);
   }
 
   string line;
@@ -128,11 +129,11 @@ void Model::assign_biterm_topic(Biterm& bi, int k) {
 
 void Model::save_res(string dir) {
   string pt = dir + "pz";
-  cout << "\nwrite p(z): " << pt << endl;
+  Rcpp::Rcout << "\nwrite p(z): " << pt << endl;
   save_pz(pt);
   
   string pt2 = dir + "pw_z";
-  cout << "write p(w|z): " << pt2 << endl;
+  Rcpp::Rcout << "write p(w|z): " << pt2 << endl;
   save_pw_z(pt2);
 }
 

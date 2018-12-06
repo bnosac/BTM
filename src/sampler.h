@@ -60,7 +60,7 @@ inline void systematic_sample(const vector<double>& p, int N,
 		u[n] = u[0] + double(n) / N;
 
 	int i = 0;
-	double s1 = 0;
+	//double s1 = 0;
 	double s2 = p[0];
 	for (int n = 0; n < N - 1; ++n) {
 		while (i < N && u[i] < s2) {
@@ -68,7 +68,7 @@ inline void systematic_sample(const vector<double>& p, int N,
 			++counts[n];
 		}
 
-		s1 = s2;
+		//s1 = s2;
 		s2 += p[n + 1];
 	}
 
