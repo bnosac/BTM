@@ -40,7 +40,7 @@
 #' model  <- BTM(x, k = 5, alpha = 1, beta = 0.01, iter = 10, trace = TRUE)
 #' model
 #' scores <- predict(model, newdata = x)
-BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 10, window = 15, trace = FALSE){
+BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15, trace = FALSE){
   word <- doc_id <- NULL
   trace <- as.integer(trace)
   stopifnot(k >= 1)

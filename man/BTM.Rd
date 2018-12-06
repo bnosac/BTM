@@ -4,7 +4,7 @@
 \alias{BTM}
 \title{Construct a Biterm Topic Model on Short Text}
 \usage{
-BTM(data, k = 5, alpha = 50/k, beta = 0.01, iter = 10, window = 15,
+BTM(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15,
   trace = FALSE)
 }
 \arguments{
