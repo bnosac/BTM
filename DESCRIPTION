@@ -14,8 +14,7 @@ Description: Biterm Topic Model is a word co-occurrence based topic model that l
 License: Apache License 2.0
 Encoding: UTF-8
 LazyData: true
-Depends: R (>= 2.10)
-Imports: Rcpp (>= 0.11.5), udpipe, data.table, utils
+Imports: Rcpp, udpipe, data.table, utils
 LinkingTo: Rcpp
 RoxygenNote: 6.0.1
 SystemRequirements: C++11
