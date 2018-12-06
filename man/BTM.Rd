@@ -5,7 +5,7 @@
 \title{Construct a Biterm Topic Model on Short Text}
 \usage{
 BTM(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15,
-  trace = FALSE)
+  background = FALSE, trace = FALSE)
 }
 \arguments{
 \item{data}{a tokenised data frame containing one row per token with columns doc_id (a context identifier e.g. a tweet id, a document id, a sentence id) 
@@ -21,6 +21,9 @@ and token (of type character with the token)}
 
 \item{window}{integer with the window size for biterm extraction. Defaults to 15.}
 
+\item{background}{logical if set to \code{TRUE}, the first topic is set to a background topic that 
+equals to the empirical word dsitribution. This can be used to filter out common words. Defaults to FALSE.}
+
 \item{trace}{logical indicating to print out evolution of the Gibbs sampling iterations. Defaults to FALSE.}
 }
 \value{
@@ -31,6 +34,7 @@ an object of class BTM which is a list containing
 \item{alpha: the symmetric dirichlet prior probability of a topic P(z)}
 \item{beta: the symmetric dirichlet prior probability of a word given the topic P(w|z)}
 \item{iter: the number of iterations of Gibbs sampling}
+\item{background: indicator if the first topic is set to the background topic that equals the empirical word dsitribution.}
 \item{theta: a vector with the topic probability p(z) which is determinated by the overall proportions of biterms in it}
 \item{phi: a matrix of dimension W x K with one row for each token in the data. This matrix contains the probability of the token given the topic P(w|z).
 the rownames of the matrix indicate the token w}
@@ -55,7 +59,14 @@ x <- subset(brussels_reviews_anno, language == "nl")
 x <- subset(x, xpos \%in\% c("NN", "NNP", "NNS"))
 model  <- BTM(x, k = 5, alpha = 1, beta = 0.01, iter = 10, trace = TRUE)
 model
+terms(model)
 scores <- predict(model, newdata = x)
+
+## Another small run with first topic the background word distribution
+set.seed(123456)
+model  <- BTM(x, k = 5, beta = 0.01, iter = 10, background = TRUE)
+model
+terms(model)
 }
 \references{
 Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng. A Biterm Topic Model For Short Text. WWW2013,

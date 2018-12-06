@@ -19,6 +19,8 @@
 #' @param beta numeric, indicating the symmetric dirichlet prior probability of a word given the topic P(w|z). Defaults to 0.1.
 #' @param iter integer with the number of iterations of Gibbs sampling
 #' @param window integer with the window size for biterm extraction. Defaults to 15.
+#' @param background logical if set to \code{TRUE}, the first topic is set to a background topic that 
+#' equals to the empirical word dsitribution. This can be used to filter out common words. Defaults to FALSE.
 #' @param trace logical indicating to print out evolution of the Gibbs sampling iterations. Defaults to FALSE.
 #' @return an object of class BTM which is a list containing
 #' \itemize{
@@ -27,6 +29,7 @@
 #' \item{alpha: the symmetric dirichlet prior probability of a topic P(z)}
 #' \item{beta: the symmetric dirichlet prior probability of a word given the topic P(w|z)}
 #' \item{iter: the number of iterations of Gibbs sampling}
+#' \item{background: indicator if the first topic is set to the background topic that equals the empirical word dsitribution.}
 #' \item{theta: a vector with the topic probability p(z) which is determinated by the overall proportions of biterms in it}
 #' \item{phi: a matrix of dimension W x K with one row for each token in the data. This matrix contains the probability of the token given the topic P(w|z).
 #' the rownames of the matrix indicate the token w}
@@ -39,10 +42,18 @@
 #' x <- subset(x, xpos %in% c("NN", "NNP", "NNS"))
 #' model  <- BTM(x, k = 5, alpha = 1, beta = 0.01, iter = 10, trace = TRUE)
 #' model
+#' terms(model)
 #' scores <- predict(model, newdata = x)
-BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15, trace = FALSE){
+#' 
+#' ## Another small run with first topic the background word distribution
+#' set.seed(123456)
+#' model  <- BTM(x, k = 5, beta = 0.01, iter = 10, background = TRUE)
+#' model
+#' terms(model)
+BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15, background = FALSE, trace = FALSE){
   word <- doc_id <- NULL
   trace <- as.integer(trace)
+  background <- as.integer(as.logical(background))
   stopifnot(k >= 1)
   stopifnot(iter >= 1)
   stopifnot(window >= 1)
@@ -60,7 +71,7 @@ BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15
   x <- x[, list(txt = paste(word, collapse = " ")), by = list(doc_id)]
   
   ## build the model
-  model <- btm(x$txt, K = k, W = voc, alpha = alpha, beta = beta, iter = iter, win = window, trace = as.integer(trace))
+  model <- btm(x$txt, K = k, W = voc, alpha = alpha, beta = beta, iter = iter, win = window, background = background, trace = as.integer(trace))
   
   ## make sure integer numbers are back tokens again
   rownames(model$phi) <- vocabulary$token
