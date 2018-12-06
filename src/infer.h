@@ -11,7 +11,8 @@
 using namespace std;
 
 class Infer {
-private:
+//private:
+public:
   int K;
   string type;			// infer type
   
@@ -19,7 +20,7 @@ private:
   Pvec<double> pz;	    // p(z) = theta
   Pmat<double> pw_z;   // p(w|z) = phi, size K * M
 
-private:
+//private:
   void load_para(string model_dir);
   
   void doc_infer(const Doc& doc, Pvec<double>& pz_d);  
