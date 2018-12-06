@@ -108,7 +108,7 @@ predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...)
 
 #' @title Get highest token probabilities for each topic 
 #' @description Get highest token probabilities for each topic 
-#' @param object an object of class BTM as returned by \code{\link{BTM}}
+#' @param x an object of class BTM as returned by \code{\link{BTM}}
 #' @param threshold threshold in 0-1 range. Only the terms which are more likely than the threshold are returned for each topic
 #' @param top_n integer indicating to return the top_n
 #' @param ... not used
@@ -122,8 +122,8 @@ predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...)
 #' x <- subset(x, xpos %in% c("NN", "NNP", "NNS"))
 #' model  <- BTM(x, k = 5, iter = 5, trace = TRUE)
 #' terms(model)
-terms <- function(object, threshold = +Inf, top_n = 5, ...){
-  apply(object$token, MARGIN=2, FUN=function(x){
+terms.BTM <- function(x, threshold = +Inf, top_n = 5, ...){
+  apply(x$token, MARGIN=2, FUN=function(x){
     x <- data.frame(token = names(x), probability = x)
     x <- x[x$probability < threshold, ]
     x <- x[order(x$probability, decreasing = TRUE), ]
