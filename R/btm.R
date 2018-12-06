@@ -81,7 +81,7 @@ print.BTM <- function(x, ...){
 #' @description Classify new text alongside the biterm topic model.\cr
 #' 
 #' To infer the topics in a document, it is assumed that the topic proportions of a document 
-#' equals to the expectation of the topic proportions of biterms generated from the document.
+#' is driven by the expectation of the topic proportions of biterms generated from the document.
 #' @param object an object of class BTM as returned by \code{\link{BTM}}
 #' @param newdata a tokenised data frame containing one row per token with columns doc_id (a context identifier e.g. a tweet id, a document id, a sentence id) and token (of type character with the token)
 #' @param type character string with the type of prediction. 
@@ -89,10 +89,12 @@ print.BTM <- function(x, ...){
 #' indicating to sum over the the expectation of the topic proportions of biterms generated from the document. For the other approaches, please inspect the paper.
 #' @param ... not used
 #' @references Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng. A Biterm Topic Model For Short Text. WWW2013,
-#' \url{https://github.com/xiaohuiyan/BTM}
-#' @return a matrix containing one row per doc_id (context identifier)
-#' which contains words part of the dictionary of the BTM model and K columns, one for each topic. 
-#' It contains P(z|d), the probability of the topic given the biterms for each context identifier.
+#' \url{https://github.com/xiaohuiyan/BTM}, \url{https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/BTM-WWW13.pdf}
+#' @seealso \code{\link{BTM}}
+#' @return a matrix containing containing P(z|d) - the probability of the topic given the biterms.\cr
+#' The matrix has one row for each unique doc_id (context identifier)
+#' which contains words part of the dictionary of the BTM model and has K columns, 
+#' one for each topic. 
 #' @export
 #' @examples 
 #' library(udpipe)
@@ -123,7 +125,7 @@ predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...)
 #' @description Get highest token probabilities for each topic 
 #' @param x an object of class BTM as returned by \code{\link{BTM}}
 #' @param threshold threshold in 0-1 range. Only the terms which are more likely than the threshold are returned for each topic
-#' @param top_n integer indicating to return the top_n
+#' @param top_n integer indicating to return the top n tokens for each topic only 
 #' @param ... not used
 #' @return a list of data.frames where each data.frame contains token and probability ordered from high to low.
 #' The list is the same length as the number of topics.
@@ -135,10 +137,12 @@ predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...)
 #' x <- subset(x, xpos %in% c("NN", "NNP", "NNS"))
 #' model  <- BTM(x, k = 5, iter = 5, trace = TRUE)
 #' terms(model)
-terms.BTM <- function(x, threshold = +Inf, top_n = 5, ...){
+#' terms(model, top_n = 10)
+#' terms(model, threshold = 0.01, top_n = +Inf)
+terms.BTM <- function(x, threshold = 0, top_n = 5, ...){
   apply(x$phi, MARGIN=2, FUN=function(x){
     x <- data.frame(token = names(x), probability = x)
-    x <- x[x$probability < threshold, ]
+    x <- x[x$probability >= threshold, ]
     x <- x[order(x$probability, decreasing = TRUE), ]
     rownames(x) <- NULL
     head(x, top_n)

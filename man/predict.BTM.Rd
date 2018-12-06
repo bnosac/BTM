@@ -18,15 +18,16 @@ indicating to sum over the the expectation of the topic proportions of biterms g
 \item{...}{not used}
 }
 \value{
-a matrix containing one row per doc_id (context identifier)
-which contains words part of the dictionary of the BTM model and K columns, one for each topic. 
-It contains P(z|d), the probability of the topic given the biterms for each context identifier.
+a matrix containing containing P(z|d) - the probability of the topic given the biterms.\cr
+The matrix has one row for each unique doc_id (context identifier)
+which contains words part of the dictionary of the BTM model and has K columns, 
+one for each topic.
 }
 \description{
 Classify new text alongside the biterm topic model.\cr
 
 To infer the topics in a document, it is assumed that the topic proportions of a document 
-equals to the expectation of the topic proportions of biterms generated from the document.
+is driven by the expectation of the topic proportions of biterms generated from the document.
 }
 \examples{
 library(udpipe)
@@ -40,5 +41,8 @@ scores <- predict(model, newdata = x, type = "mix")
 }
 \references{
 Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng. A Biterm Topic Model For Short Text. WWW2013,
-\url{https://github.com/xiaohuiyan/BTM}
+\url{https://github.com/xiaohuiyan/BTM}, \url{https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/BTM-WWW13.pdf}
+}
+\seealso{
+\code{\link{BTM}}
 }

@@ -4,14 +4,14 @@
 \alias{terms.BTM}
 \title{Get highest token probabilities for each topic}
 \usage{
-\method{terms}{BTM}(x, threshold = +Inf, top_n = 5, ...)
+\method{terms}{BTM}(x, threshold = 0, top_n = 5, ...)
 }
 \arguments{
 \item{x}{an object of class BTM as returned by \code{\link{BTM}}}
 
 \item{threshold}{threshold in 0-1 range. Only the terms which are more likely than the threshold are returned for each topic}
 
-\item{top_n}{integer indicating to return the top_n}
+\item{top_n}{integer indicating to return the top n tokens for each topic only}
 
 \item{...}{not used}
 }
@@ -29,4 +29,6 @@ x <- subset(brussels_reviews_anno, language == "nl")
 x <- subset(x, xpos \%in\% c("NN", "NNP", "NNS"))
 model  <- BTM(x, k = 5, iter = 5, trace = TRUE)
 terms(model)
+terms(model, top_n = 10)
+terms(model, threshold = 0.01, top_n = +Inf)
 }
