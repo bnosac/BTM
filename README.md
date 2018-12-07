@@ -10,7 +10,7 @@ This R package is not on CRAN, you can only install it as follows: `devtools::in
 
 ### What
 
-The Biterm Topic Model (BTM) is a word co-occurrence based topic model that learns topics by modeling word-word co-occurrences patterns (e.g., biterms)
+The Biterm Topic Model (BTM) is a word co-occurrence based topic model that learns topics by modelling word-word co-occurrences patterns (e.g., biterms)
 
 - A biterm consists of two words co-occurring in the same context, for example, in the same short text window. 
 - BTM models the biterm occurrences in a corpus (unlike LDA models which model the word occurrences in a document). 
