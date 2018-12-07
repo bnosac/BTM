@@ -9,7 +9,11 @@
 \arguments{
 \item{object}{an object of class BTM as returned by \code{\link{BTM}}}
 
-\item{newdata}{a tokenised data frame containing one row per token with columns doc_id (a context identifier e.g. a tweet id, a document id, a sentence id) and token (of type character with the token)}
+\item{newdata}{a tokenised data frame containing one row per token with 2 columns 
+\itemize{
+\item the first column is a context identifier (e.g. a tweet id, a document id, a sentence id, an identifier of a survey answer, an identifier of a part of a text)
+\item the second column is a column called token (of type character) containing the sequence of words in the context 
+}}
 
 \item{type}{character string with the type of prediction. 
 Either one of 'sum_b', 'sub_w' or 'mix'. Default is set to 'sum_b' as indicated in the paper, 
@@ -34,6 +38,7 @@ library(udpipe)
 data("brussels_reviews_anno", package = "udpipe")
 x <- subset(brussels_reviews_anno, language == "nl")
 x <- subset(x, xpos \%in\% c("NN", "NNP", "NNS"))
+x <- x[, c("doc_id", "token")]
 model  <- BTM(x, k = 5, iter = 5, trace = TRUE)
 scores <- predict(model, newdata = x, type = "sum_b")
 scores <- predict(model, newdata = x, type = "sub_w")

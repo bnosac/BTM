@@ -8,8 +8,11 @@ BTM(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15,
   background = FALSE, trace = FALSE)
 }
 \arguments{
-\item{data}{a tokenised data frame containing one row per token with columns doc_id (a context identifier e.g. a tweet id, a document id, a sentence id) 
-and token (of type character with the token)}
+\item{data}{a tokenised data frame containing one row per token with 2 columns 
+\itemize{
+\item the first column is a context identifier (e.g. a tweet id, a document id, a sentence id, an identifier of a survey answer, an identifier of a part of a text)
+\item the second column is a column called token (of type character) containing the sequence of words occurring within the context identifier 
+}}
 
 \item{k}{integer with the number of topics to identify}
 
@@ -52,11 +55,25 @@ where k is the number of topics you want to extract.
 \item Estimation of the topic model is done with the Gibbs sampling algorithm. Where estimates are provided for \eqn{P(w|k)=phi} and \eqn{P(z)=theta}.
 }
 }
+\details{
+A biterm is defined as a pair of words co-occurring in the same text window. \cr
+If you have as an example a document with sequence of words "A B C B", and assuming the window size is set to 3, 
+that implies their are two text windows which can generate biterms namely
+text window 'A B C': 'A B', 'B C', 'A C' \cr
+text window 'B C B': 'B C', 'C B', 'B B' \cr
+A biterm is an unorder word pair, 'B C' = 'C B'. 
+Thus, the document will have the following biterm frequencies: 
+'A B': 1\cr 
+'B C': 3\cr
+'A C': 1\cr
+'B B': 1
+}
 \examples{
 library(udpipe)
 data("brussels_reviews_anno", package = "udpipe")
 x <- subset(brussels_reviews_anno, language == "nl")
 x <- subset(x, xpos \%in\% c("NN", "NNP", "NNS"))
+x <- x[, c("doc_id", "token")]
 model  <- BTM(x, k = 5, alpha = 1, beta = 0.01, iter = 10, trace = TRUE)
 model
 terms(model)

@@ -33,6 +33,7 @@ data("brussels_reviews_anno", package = "udpipe")
 ## Taking only nouns of Dutch data
 x <- subset(brussels_reviews_anno, language == "nl")
 x <- subset(x, xpos %in% c("NN", "NNP", "NNS"))
+x <- x[, c("doc_id", "token")]
 
 ## Building the model
 set.seed(321)
