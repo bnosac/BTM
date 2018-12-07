@@ -111,3 +111,9 @@ model  <- BTM(x, k = 5, beta = 0.01, background = TRUE, iter = 1000, trace = 100
 topicterms <- terms(model, top_n = 5)
 topicterms
 ```
+
+## Support in text mining
+
+Need support in text mining?
+Contact BNOSAC: http://www.bnosac.be
+
