@@ -21,7 +21,7 @@ SEXP btm(Rcpp::CharacterVector x, int K, int W, double alpha, double beta, int i
   bool has_background = background;
   Rcpp::XPtr<Model> model(new Model(K, W, alpha, beta, iter, save_step, has_background), true);
   std::string line;
-  for (unsigned int idx = 0; idx < x.size(); idx++){
+  for (int idx = 0; idx < x.size(); idx++){
     line = Rcpp::as<std::string>(x[idx]);
     Doc doc(line);
     doc.gen_biterms(model->bs, win);
@@ -95,7 +95,7 @@ Rcpp::NumericMatrix btm_infer(const Rcpp::List & model, Rcpp::CharacterVector x,
   inf.pz = pz;
   inf.pw_z = pw_z;
   std::string line;
-  for (unsigned int idx = 0; idx < x.size(); idx++){
+  for (int idx = 0; idx < x.size(); idx++){
     line = Rcpp::as<std::string>(x[idx]);
     Doc doc(line);
     Pvec<double> pz_d(K);

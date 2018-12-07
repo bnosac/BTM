@@ -20,7 +20,7 @@ void Model::run(string doc_pt, string res_dir) {
   string out_dir = res_dir + "k" + str_util::itos(K) + ".";
   for (int it = 1; it < n_iter + 1; ++it) {
   Rcpp::Rcout << "\riter " << it << '/' << n_iter;
-	fflush(stdout);
+	//fflush(stdout);
 	for (int b = 0; b < (int)bs.size(); ++b) {
 	  update_biterm(bs[b]);
 	}
