@@ -12,8 +12,11 @@
 #' }
 #' @references Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng. A Biterm Topic Model For Short Text. WWW2013,
 #' \url{https://github.com/xiaohuiyan/BTM}, \url{https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/BTM-WWW13.pdf}
-#' @param data a tokenised data frame containing one row per token with columns doc_id (a context identifier e.g. a tweet id, a document id, a sentence id) 
-#' and token (of type character with the token)
+#' @param data a tokenised data frame containing one row per token with 2 columns 
+#' \itemize{
+#' \item the first column is a context identifier (e.g. a tweet id, a document id, a sentence id, an identifier of a survey answer, an identifier of a part of a text)
+#' \item the second column is a column called token (of type character) containing the sequence of words occurring within the context identifier 
+#' }
 #' @param k integer with the number of topics to identify
 #' @param alpha numeric, indicating the symmetric dirichlet prior probability of a topic P(z). Defaults to 50/k.
 #' @param beta numeric, indicating the symmetric dirichlet prior probability of a word given the topic P(w|z). Defaults to 0.1.
@@ -22,6 +25,18 @@
 #' @param background logical if set to \code{TRUE}, the first topic is set to a background topic that 
 #' equals to the empirical word dsitribution. This can be used to filter out common words. Defaults to FALSE.
 #' @param trace logical indicating to print out evolution of the Gibbs sampling iterations. Defaults to FALSE.
+#' @details 
+#' A biterm is defined as a pair of words co-occurring in the same text window. \cr
+#' If you have as an example a document with sequence of words "A B C B", and assuming the window size is set to 3, 
+#' that implies their are two text windows which can generate biterms namely
+#' text window 'A B C': 'A B', 'B C', 'A C' \cr
+#' text window 'B C B': 'B C', 'C B', 'B B' \cr
+#' A biterm is an unorder word pair, 'B C' = 'C B'. 
+#' Thus, the document will have the following biterm frequencies: 
+#' 'A B': 1\cr 
+#' 'B C': 3\cr
+#' 'A C': 1\cr
+#' 'B B': 1
 #' @return an object of class BTM which is a list containing
 #' \itemize{
 #' \item{K: the number of topics}
@@ -40,6 +55,7 @@
 #' data("brussels_reviews_anno", package = "udpipe")
 #' x <- subset(brussels_reviews_anno, language == "nl")
 #' x <- subset(x, xpos %in% c("NN", "NNP", "NNS"))
+#' x <- x[, c("doc_id", "token")]
 #' model  <- BTM(x, k = 5, alpha = 1, beta = 0.01, iter = 10, trace = TRUE)
 #' model
 #' terms(model)
@@ -60,8 +76,13 @@ BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15
   iter <- as.integer(iter)
   window <- as.integer(window)
   stopifnot(inherits(data, "data.frame"))
-  stopifnot(all(c("doc_id", "token") %in% colnames(data)))
-  
+  if(ncol(data)){
+    data <- data.frame(doc_id = data[, 1], token = data[, 2], stringsAsFactors = FALSE)
+  }else{
+    if(!all(c("doc_id", "token") %in% colnames(data))){
+      stop("please provide in data a data.frame with 2 columns as indicated in the help of BTM")
+    }  
+  }
   ## Convert tokens to integer numbers which need to be pasted into a string separated by spaces
   x <- data.table::setDT(data)
   x$word <- factor(x$token)
@@ -94,7 +115,11 @@ print.BTM <- function(x, ...){
 #' To infer the topics in a document, it is assumed that the topic proportions of a document 
 #' is driven by the expectation of the topic proportions of biterms generated from the document.
 #' @param object an object of class BTM as returned by \code{\link{BTM}}
-#' @param newdata a tokenised data frame containing one row per token with columns doc_id (a context identifier e.g. a tweet id, a document id, a sentence id) and token (of type character with the token)
+#' @param newdata a tokenised data frame containing one row per token with 2 columns 
+#' \itemize{
+#' \item the first column is a context identifier (e.g. a tweet id, a document id, a sentence id, an identifier of a survey answer, an identifier of a part of a text)
+#' \item the second column is a column called token (of type character) containing the sequence of words in the context 
+#' }
 #' @param type character string with the type of prediction. 
 #' Either one of 'sum_b', 'sub_w' or 'mix'. Default is set to 'sum_b' as indicated in the paper, 
 #' indicating to sum over the the expectation of the topic proportions of biterms generated from the document. For the other approaches, please inspect the paper.
@@ -112,6 +137,7 @@ print.BTM <- function(x, ...){
 #' data("brussels_reviews_anno", package = "udpipe")
 #' x <- subset(brussels_reviews_anno, language == "nl")
 #' x <- subset(x, xpos %in% c("NN", "NNP", "NNS"))
+#' x <- x[, c("doc_id", "token")]
 #' model  <- BTM(x, k = 5, iter = 5, trace = TRUE)
 #' scores <- predict(model, newdata = x, type = "sum_b")
 #' scores <- predict(model, newdata = x, type = "sub_w")
@@ -120,12 +146,18 @@ predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...)
   word <- doc_id <- NULL
   type <- match.arg(type)
   stopifnot(inherits(newdata, "data.frame"))
-  stopifnot(all(c("doc_id", "token") %in% colnames(newdata)))
+  if(ncol(newdata)){
+    newdata <- data.frame(doc_id = newdata[, 1], token = newdata[, 2], stringsAsFactors = FALSE)
+  }else{
+    if(!all(c("doc_id", "token") %in% colnames(newdata))){
+      stop("please provide in newdata a data.frame with 2 columns as indicated in the help of BTM")
+    }
+  }
   newdata <- newdata[newdata$token %in% rownames(object$phi), ]
   newdata <- data.table::setDT(newdata)
-  newdata$word <- udpipe::txt_recode(newdata$token, 
-                                     from = rownames(object$phi), 
-                                     to = seq_along(rownames(object$phi))-1L)
+  from         <- rownames(object$phi) 
+  to           <- seq_along(rownames(object$phi))-1L
+  newdata$word <- to[match(newdata$token, from)]
   newdata <- newdata[, list(txt = paste(word, collapse = " ")), by = list(doc_id)]
   scores <- btm_infer(object, newdata$txt, type)
   rownames(scores) <- newdata$doc_id
@@ -146,6 +178,7 @@ predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...)
 #' data("brussels_reviews_anno", package = "udpipe")
 #' x <- subset(brussels_reviews_anno, language == "nl")
 #' x <- subset(x, xpos %in% c("NN", "NNP", "NNS"))
+#' x <- x[, c("doc_id", "token")]
 #' model  <- BTM(x, k = 5, iter = 5, trace = TRUE)
 #' terms(model)
 #' terms(model, top_n = 10)
