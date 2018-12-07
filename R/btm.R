@@ -84,15 +84,14 @@ BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15
     }  
   }
   ## Convert tokens to integer numbers which need to be pasted into a string separated by spaces
-  x <- data.table::setDT(data)
   x$word <- factor(x$token)
   vocabulary <- data.frame(id = seq_along(levels(x$word)) - 1L, token = levels(x$word), stringsAsFactors = FALSE)
   x$word <- as.integer(x$word) - 1L
   voc <- max(x$word) + 1
-  x <- x[, list(txt = paste(word, collapse = " ")), by = list(doc_id)]
-  
+  context <- split(x$word, x$doc_id)
+  context <- sapply(context, FUN=function(x) paste(x, collapse = " "))
   ## build the model
-  model <- btm(x$txt, K = k, W = voc, alpha = alpha, beta = beta, iter = iter, win = window, background = background, trace = as.integer(trace))
+  model <- btm(context, K = k, W = voc, alpha = alpha, beta = beta, iter = iter, win = window, background = background, trace = as.integer(trace))
   
   ## make sure integer numbers are back tokens again
   rownames(model$phi) <- vocabulary$token
@@ -154,13 +153,13 @@ predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...)
     }
   }
   newdata <- newdata[newdata$token %in% rownames(object$phi), ]
-  newdata <- data.table::setDT(newdata)
   from         <- rownames(object$phi) 
   to           <- seq_along(rownames(object$phi))-1L
   newdata$word <- to[match(newdata$token, from)]
-  newdata <- newdata[, list(txt = paste(word, collapse = " ")), by = list(doc_id)]
-  scores <- btm_infer(object, newdata$txt, type)
-  rownames(scores) <- newdata$doc_id
+  context <- split(newdata$word, newdata$doc_id)
+  context <- sapply(context, FUN=function(x) paste(x, collapse = " "))
+  scores <- btm_infer(object, context, type)
+  rownames(scores) <- names(context)
   scores
 }
 

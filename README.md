@@ -41,61 +41,61 @@ model  <- BTM(x, k = 4, beta = 0.01, iter = 1000, trace = 100)
 
 ## Inspect the model - topic frequency + conditional term probabilities
 model$theta
-[1] 0.3353083 0.2023678 0.2043752 0.2579486
+[1] 0.3749164 0.2176499 0.1983099 0.2091239
 
 topicterms <- terms(model, top_n = 10)
 topicterms
 [[1]]
          token probability
-1  appartement 0.049776587
-2      Brussel 0.024257148
-3        kamer 0.016732859
-4        buurt 0.014101989
-5      centrum 0.013523198
-6          bed 0.011418502
-7     badkamer 0.010260919
-8       mensen 0.010208302
-9      locatie 0.010103067
-10  slaapkamer 0.009682128
+1  appartement 0.081536297
+2      Brussel 0.045403638
+3      centrum 0.025393918
+4      locatie 0.016958166
+5        buurt 0.014770052
+6     aanrader 0.013589623
+7     verblijf 0.011718210
+8  loopafstand 0.011545464
+9         stad 0.010451408
+10       kamer 0.008867905
 
 [[2]]
          token probability
-1  appartement 0.076861701
-2      Brussel 0.041358005
-3      centrum 0.020945280
-4        buurt 0.018854591
-5     verblijf 0.011784262
-6      minuten 0.011518175
-7     aanrader 0.010187736
-8     aankomst 0.010035686
-9         stad 0.009465498
-10     locatie 0.009389473
+1  appartement 0.063439432
+2      Brussel 0.027032724
+3        buurt 0.019989465
+4     verblijf 0.016666237
+5      centrum 0.013491810
+6        super 0.012847005
+7        kamer 0.011259791
+8     centraal 0.008730170
+9     badkamer 0.008184565
+10        stad 0.008134965
 
 [[3]]
          token probability
-1  appartement  0.04586403
-2      Brussel  0.02829498
-3        kamer  0.01957048
-4      centrum  0.01668900
-5         huis  0.01592861
-6     verblijf  0.01352737
-7        buurt  0.01288704
-8      locatie  0.01136626
-9         stad  0.01032572
-10    badkamer  0.01000555
+1         huis  0.03032317
+2  appartement  0.02433486
+3        buurt  0.01921758
+4     badkamer  0.01693113
+5        kamer  0.01557015
+6      Brussel  0.01546127
+7          bed  0.01290263
+8     verblijf  0.01241268
+9      centrum  0.01159609
+10  slaapkamer  0.01143277
 
 [[4]]
          token probability
-1  appartement  0.05632430
-2      Brussel  0.03434098
-3         huis  0.02144649
-4        buurt  0.02081968
-5     verblijf  0.01732742
-6      centrum  0.01477539
-7        kamer  0.01423811
-8     aanrader  0.01356653
-9         stad  0.01222335
-10 loopafstand  0.01101449
+1  appartement 0.042021835
+2      Brussel 0.031852056
+3        kamer 0.019101115
+4         huis 0.017500795
+5        buurt 0.014558270
+6     verblijf 0.009963802
+7      centrum 0.009705686
+8          dag 0.009602439
+9     aanrader 0.009550816
+10        stad 0.009292700
 
 scores <- terms(predict, newdata = x)
 ```

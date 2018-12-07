@@ -17,7 +17,7 @@ Description: Biterm Topic Models find topics in collections of short texts.
 License: Apache License 2.0
 Encoding: UTF-8
 LazyData: true
-Imports: Rcpp, data.table, utils
+Imports: Rcpp, utils
 Suggests: udpipe
 LinkingTo: Rcpp
 RoxygenNote: 6.0.1
