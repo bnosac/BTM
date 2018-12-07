@@ -67,7 +67,6 @@
 #' model
 #' terms(model)
 BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15, background = FALSE, trace = FALSE){
-  word <- doc_id <- NULL
   trace <- as.integer(trace)
   background <- as.integer(as.logical(background))
   stopifnot(k >= 1)
@@ -84,12 +83,13 @@ BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15
     }  
   }
   ## Convert tokens to integer numbers which need to be pasted into a string separated by spaces
-  x$word <- factor(x$token)
-  vocabulary <- data.frame(id = seq_along(levels(x$word)) - 1L, token = levels(x$word), stringsAsFactors = FALSE)
-  x$word <- as.integer(x$word) - 1L
-  voc <- max(x$word) + 1
-  context <- split(x$word, x$doc_id)
+  data$word <- factor(data$token)
+  vocabulary <- data.frame(id = seq_along(levels(data$word)) - 1L, token = levels(data$word), stringsAsFactors = FALSE)
+  data$word <- as.integer(data$word) - 1L
+  voc <- max(data$word) + 1
+  context <- split(data$word, data$doc_id)
   context <- sapply(context, FUN=function(x) paste(x, collapse = " "))
+
   ## build the model
   model <- btm(context, K = k, W = voc, alpha = alpha, beta = beta, iter = iter, win = window, background = background, trace = as.integer(trace))
   
@@ -102,7 +102,7 @@ BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15
 #' @export
 print.BTM <- function(x, ...){
   cat("Biterm Topic Model", sep = "\n")
-  cat(sprintf("  trained with %s Gibss iterations, alpha: %s, beta: %s", x$iter, x$alpha, x$beta), sep = "\n")
+  cat(sprintf("  trained with %s Gibbs iterations, alpha: %s, beta: %s", x$iter, x$alpha, x$beta), sep = "\n")
   cat(sprintf("  topics: %s", x$K), sep = "\n")
   cat(sprintf("  size of the token vocabulary: %s", x$W), sep = "\n")
   cat(sprintf("  topic distribution theta: %s", paste(round(x$theta, 3), collapse = " ")), sep = "\n")
@@ -142,7 +142,6 @@ print.BTM <- function(x, ...){
 #' scores <- predict(model, newdata = x, type = "sub_w")
 #' scores <- predict(model, newdata = x, type = "mix")
 predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...){
-  word <- doc_id <- NULL
   type <- match.arg(type)
   stopifnot(inherits(newdata, "data.frame"))
   if(ncol(newdata)){

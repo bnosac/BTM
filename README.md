@@ -97,7 +97,7 @@ topicterms
 9     aanrader 0.009550816
 10        stad 0.009292700
 
-scores <- terms(predict, newdata = x)
+scores <- predict(model, newdata = x)
 ```
 
 Make a specific topic called the background
