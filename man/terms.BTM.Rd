@@ -27,7 +27,7 @@ library(udpipe)
 data("brussels_reviews_anno", package = "udpipe")
 x <- subset(brussels_reviews_anno, language == "nl")
 x <- subset(x, xpos \%in\% c("NN", "NNP", "NNS"))
-x <- x[, c("doc_id", "token")]
+x <- x[, c("doc_id", "lemma")]
 model  <- BTM(x, k = 5, iter = 5, trace = TRUE)
 terms(model)
 terms(model, top_n = 10)

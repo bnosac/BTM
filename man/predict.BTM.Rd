@@ -12,7 +12,7 @@
 \item{newdata}{a tokenised data frame containing one row per token with 2 columns 
 \itemize{
 \item the first column is a context identifier (e.g. a tweet id, a document id, a sentence id, an identifier of a survey answer, an identifier of a part of a text)
-\item the second column is a column called token (of type character) containing the sequence of words in the context 
+\item the second column is a column called of type character containing the sequence of words occurring within the context identifier 
 }}
 
 \item{type}{character string with the type of prediction. 
@@ -38,11 +38,12 @@ library(udpipe)
 data("brussels_reviews_anno", package = "udpipe")
 x <- subset(brussels_reviews_anno, language == "nl")
 x <- subset(x, xpos \%in\% c("NN", "NNP", "NNS"))
-x <- x[, c("doc_id", "token")]
+x <- x[, c("doc_id", "lemma")]
 model  <- BTM(x, k = 5, iter = 5, trace = TRUE)
 scores <- predict(model, newdata = x, type = "sum_b")
 scores <- predict(model, newdata = x, type = "sub_w")
 scores <- predict(model, newdata = x, type = "mix")
+head(scores)
 }
 \references{
 Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng. A Biterm Topic Model For Short Text. WWW2013,

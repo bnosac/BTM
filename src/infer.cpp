@@ -38,7 +38,7 @@ void Infer::load_para(string model_dir) {
   string pt2 = model_dir + "k" + str_util::itos(K) + ".pw_z";
   Rcpp::Rcout << "load p(w|z):" << pt2 <<endl;
   pw_z.load(pt2);
-  printf("n(z)=%d, n(w)=%d\n", pw_z.rows(), pw_z.cols());
+  //printf("n(z)=%d, n(w)=%d\n", pw_z.rows(), pw_z.cols());
   assert(pw_z.rows() > 0 && abs(pw_z[0].sum() - 1) < 1e-4);
 }
 

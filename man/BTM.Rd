@@ -11,7 +11,7 @@ BTM(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15,
 \item{data}{a tokenised data frame containing one row per token with 2 columns 
 \itemize{
 \item the first column is a context identifier (e.g. a tweet id, a document id, a sentence id, an identifier of a survey answer, an identifier of a part of a text)
-\item the second column is a column called token (of type character) containing the sequence of words occurring within the context identifier 
+\item the second column is a column called of type character containing the sequence of words occurring within the context identifier 
 }}
 
 \item{k}{integer with the number of topics to identify}
@@ -25,7 +25,7 @@ BTM(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15,
 \item{window}{integer with the window size for biterm extraction. Defaults to 15.}
 
 \item{background}{logical if set to \code{TRUE}, the first topic is set to a background topic that 
-equals to the empirical word dsitribution. This can be used to filter out common words. Defaults to FALSE.}
+equals to the empirical word distribution. This can be used to filter out common words. Defaults to FALSE.}
 
 \item{trace}{logical indicating to print out evolution of the Gibbs sampling iterations. Defaults to FALSE.}
 }
@@ -37,7 +37,7 @@ an object of class BTM which is a list containing
 \item{alpha: the symmetric dirichlet prior probability of a topic P(z)}
 \item{beta: the symmetric dirichlet prior probability of a word given the topic P(w|z)}
 \item{iter: the number of iterations of Gibbs sampling}
-\item{background: indicator if the first topic is set to the background topic that equals the empirical word dsitribution.}
+\item{background: indicator if the first topic is set to the background topic that equals the empirical word distribution.}
 \item{theta: a vector with the topic probability p(z) which is determinated by the overall proportions of biterms in it}
 \item{phi: a matrix of dimension W x K with one row for each token in the data. This matrix contains the probability of the token given the topic P(w|z).
 the rownames of the matrix indicate the token w}
@@ -55,25 +55,26 @@ where k is the number of topics you want to extract.
 \item Estimation of the topic model is done with the Gibbs sampling algorithm. Where estimates are provided for \eqn{P(w|k)=phi} and \eqn{P(z)=theta}.
 }
 }
-\details{
-A biterm is defined as a pair of words co-occurring in the same text window. \cr
-If you have as an example a document with sequence of words "A B C B", and assuming the window size is set to 3, 
-that implies their are two text windows which can generate biterms namely
-text window 'A B C': 'A B', 'B C', 'A C' \cr
-text window 'B C B': 'B C', 'C B', 'B B' \cr
-A biterm is an unorder word pair, 'B C' = 'C B'. 
-Thus, the document will have the following biterm frequencies: 
-'A B': 1\cr 
-'B C': 3\cr
-'A C': 1\cr
-'B B': 1
+\note{
+A biterm is defined as a pair of words co-occurring in the same text window. 
+If you have as an example a document with sequence of words \code{'A B C B'}, and assuming the window size is set to 3, 
+that implies there are two text windows which can generate biterms namely 
+text window \code{'A B C'} with biterms \code{'A B', 'B C', 'A C'} and text window \code{'B C B'} with biterms \code{'B C', 'C B', 'B B'}
+A biterm is an unorder word pair where \code{'B C' = 'C B'}. Thus, the document \code{'A B C B'} will have the following biterm frequencies: \cr
+\itemize{
+\item 'A B': 1 
+\item 'B C': 3
+\item 'A C': 1
+\item 'B B': 1
+}
+These biterms are used to create the model.
 }
 \examples{
 library(udpipe)
 data("brussels_reviews_anno", package = "udpipe")
 x <- subset(brussels_reviews_anno, language == "nl")
 x <- subset(x, xpos \%in\% c("NN", "NNP", "NNS"))
-x <- x[, c("doc_id", "token")]
+x <- x[, c("doc_id", "lemma")]
 model  <- BTM(x, k = 5, alpha = 1, beta = 0.01, iter = 10, trace = TRUE)
 model
 terms(model)
