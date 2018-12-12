@@ -40,6 +40,7 @@
 #' These biterms are used to create the model.
 #' @return an object of class BTM which is a list containing
 #' \itemize{
+#' \item{model: a pointer to the C++ BTM model}
 #' \item{K: the number of topics}
 #' \item{W: the number of tokens in the data}
 #' \item{alpha: the symmetric dirichlet prior probability of a topic P(z)}
@@ -51,6 +52,7 @@
 #' the rownames of the matrix indicate the token w}
 #' }
 #' @export
+#' @seealso \code{\link{predict.BTM}}, \code{\link{terms.BTM}}
 #' @examples
 #' library(udpipe)
 #' data("brussels_reviews_anno", package = "udpipe")
@@ -127,7 +129,7 @@ print.BTM <- function(x, ...){
 #' @param ... not used
 #' @references Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng. A Biterm Topic Model For Short Text. WWW2013,
 #' \url{https://github.com/xiaohuiyan/BTM}, \url{https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/BTM-WWW13.pdf}
-#' @seealso \code{\link{BTM}}
+#' @seealso \code{\link{BTM}}, \code{\link{terms.BTM}}
 #' @return a matrix containing containing P(z|d) - the probability of the topic given the biterms.\cr
 #' The matrix has one row for each unique doc_id (context identifier)
 #' which contains words part of the dictionary of the BTM model and has K columns, 
@@ -165,15 +167,31 @@ predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...)
   scores
 }
 
-#' @title Get highest token probabilities for each topic 
-#' @description Get highest token probabilities for each topic 
+#' @title Get highest token probabilities for each topic or get biterms used in the model
+#' @description Get highest token probabilities for each topic or get biterms used in the model
 #' @param x an object of class BTM as returned by \code{\link{BTM}}
-#' @param threshold threshold in 0-1 range. Only the terms which are more likely than the threshold are returned for each topic
-#' @param top_n integer indicating to return the top n tokens for each topic only 
+#' @param type a character string, either 'tokens' or 'biterms'. Defaults to 'tokens'.
+#' @param threshold threshold in 0-1 range. Only the terms which are more likely than the threshold are returned for each topic. Only used in case type = 'tokens'.
+#' @param top_n integer indicating to return the top n tokens for each topic only. Only used in case type = 'tokens'.
 #' @param ... not used
-#' @return a list of data.frames where each data.frame contains token and probability ordered from high to low.
-#' The list is the same length as the number of topics.
+#' @return 
+#' Depending on if type is set to 'tokens' or 'biterms' the following is returned:
+#' \itemize{
+#' \item{If \code{type='tokens'}: }{Get the probability of the token given the topic P(w|z). 
+#' It returns a list of data.frames (one for each topic) where each data.frame contains columns token and probability ordered from high to low.
+#' The list is the same length as the number of topics.}
+#' \item{If \code{type='biterms'}: }{a list containing 3 elements: 
+#' \itemize{
+#' \item \code{n} which indicates the number of used to train the model
+#' \item \code{biterms} which is a data.frame with columns term1, term2, topic and likelihood, 
+#' indicating for all biterms found in the data the topic to which the biterm is assigned to as well as the 
+#' likelihood how well the biterm is fitted by the model, namely: \code{sum(phi[term1, ] * phi[term2, ] * theta)}
+#' \item \code{ll} the sum of the log of the likelihood column of the \code{biterms} element
+#' }
+#' Note that a biterm is unordered, in the output of \code{type='biterms'} term1 is always smaller than or equal to term2.}
+#' }
 #' @export
+#' @seealso \code{\link{BTM}}, \code{\link{predict.BTM}}
 #' @examples 
 #' library(udpipe)
 #' data("brussels_reviews_anno", package = "udpipe")
@@ -184,12 +202,44 @@ predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...)
 #' terms(model)
 #' terms(model, top_n = 10)
 #' terms(model, threshold = 0.01, top_n = +Inf)
-terms.BTM <- function(x, threshold = 0, top_n = 5, ...){
-  apply(x$phi, MARGIN=2, FUN=function(x){
-    x <- data.frame(token = names(x), probability = x)
-    x <- x[x$probability >= threshold, ]
-    x <- x[order(x$probability, decreasing = TRUE), ]
-    rownames(x) <- NULL
-    head(x, top_n)
-  })
+#' bi <- terms(model, type = "biterms")
+#' str(bi)
+terms.BTM <- function(x, type = c("tokens", "biterms"), threshold = 0, top_n = 5, ...){
+  type <- match.arg(type)
+  if(type %in% "biterms"){
+    from         <- seq_along(rownames(x$phi))
+    to           <- rownames(x$phi) 
+    bit <- btm_biterms(x$model)
+    bit$biterms$term1 <- to[match(bit$biterms$term1, from)]
+    bit$biterms$term2 <- to[match(bit$biterms$term2, from)]
+    bit$biterms <- data.frame(term1 = bit$biterms$term1, 
+                              term2 = bit$biterms$term2,
+                              topic = bit$biterms$topic, stringsAsFactors = FALSE)
+    bit$biterms$likelihood <- biterm_likelihood(model = x, 
+                                                term1 = bit$biterms$term1, 
+                                                term2 = bit$biterms$term2)
+    bit$ll <- sum(log(bit$biterms$likelihood))
+    bit <- bit[c("n", "ll", "biterms")]
+    bit
+  }else if(type == "tokens"){
+    apply(x$phi, MARGIN=2, FUN=function(x){
+      x <- data.frame(token = names(x), probability = x)
+      x <- x[x$probability >= threshold, ]
+      x <- x[order(x$probability, decreasing = TRUE), ]
+      rownames(x) <- NULL
+      head(x, top_n)
+    })
+  }
+  
+}
+
+
+biterm_likelihood <- function(model, term1, term2){
+  stopifnot(all(c(term1, term2) %in% rownames(model$phi)))
+  lik <- mapply(w1 = term1, 
+                w2 = term2, 
+                FUN = function(w1, w2){
+                  sum(model$phi[w1, ] * model$phi[w2, ] * model$theta)
+                })
+  lik
 }

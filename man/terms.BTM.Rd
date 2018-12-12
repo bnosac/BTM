@@ -2,25 +2,41 @@
 % Please edit documentation in R/btm.R
 \name{terms.BTM}
 \alias{terms.BTM}
-\title{Get highest token probabilities for each topic}
+\title{Get highest token probabilities for each topic or get biterms used in the model}
 \usage{
-\method{terms}{BTM}(x, threshold = 0, top_n = 5, ...)
+\method{terms}{BTM}(x, type = c("tokens", "biterms"), threshold = 0,
+  top_n = 5, ...)
 }
 \arguments{
 \item{x}{an object of class BTM as returned by \code{\link{BTM}}}
 
-\item{threshold}{threshold in 0-1 range. Only the terms which are more likely than the threshold are returned for each topic}
+\item{type}{a character string, either 'tokens' or 'biterms'. Defaults to 'tokens'.}
 
-\item{top_n}{integer indicating to return the top n tokens for each topic only}
+\item{threshold}{threshold in 0-1 range. Only the terms which are more likely than the threshold are returned for each topic. Only used in case type = 'tokens'.}
+
+\item{top_n}{integer indicating to return the top n tokens for each topic only. Only used in case type = 'tokens'.}
 
 \item{...}{not used}
 }
 \value{
-a list of data.frames where each data.frame contains token and probability ordered from high to low.
-The list is the same length as the number of topics.
+Depending on if type is set to 'tokens' or 'biterms' the following is returned:
+\itemize{
+\item{If \code{type='tokens'}: }{Get the probability of the token given the topic P(w|z). 
+It returns a list of data.frames (one for each topic) where each data.frame contains columns token and probability ordered from high to low.
+The list is the same length as the number of topics.}
+\item{If \code{type='biterms'}: }{a list containing 3 elements: 
+\itemize{
+\item \code{n} which indicates the number of used to train the model
+\item \code{biterms} which is a data.frame with columns term1, term2, topic and likelihood, 
+indicating for all biterms found in the data the topic to which the biterm is assigned to as well as the 
+likelihood how well the biterm is fitted by the model, namely: \code{sum(phi[term1, ] * phi[term2, ] * theta)}
+\item \code{ll} the sum of the log of the likelihood column of the \code{biterms} element
+}
+Note that a biterm is unordered, in the output of \code{type='biterms'} term1 is always smaller than or equal to term2.}
+}
 }
 \description{
-Get highest token probabilities for each topic
+Get highest token probabilities for each topic or get biterms used in the model
 }
 \examples{
 library(udpipe)
@@ -32,4 +48,9 @@ model  <- BTM(x, k = 5, iter = 5, trace = TRUE)
 terms(model)
 terms(model, top_n = 10)
 terms(model, threshold = 0.01, top_n = +Inf)
+bi <- terms(model, type = "biterms")
+str(bi)
+}
+\seealso{
+\code{\link{BTM}}, \code{\link{predict.BTM}}
 }

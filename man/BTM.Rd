@@ -32,6 +32,7 @@ equals to the empirical word distribution. This can be used to filter out common
 \value{
 an object of class BTM which is a list containing
 \itemize{
+\item{model: a pointer to the C++ BTM model}
 \item{K: the number of topics}
 \item{W: the number of tokens in the data}
 \item{alpha: the symmetric dirichlet prior probability of a topic P(z)}
@@ -89,4 +90,7 @@ terms(model)
 \references{
 Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng. A Biterm Topic Model For Short Text. WWW2013,
 \url{https://github.com/xiaohuiyan/BTM}, \url{https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/BTM-WWW13.pdf}
+}
+\seealso{
+\code{\link{predict.BTM}}, \code{\link{terms.BTM}}
 }

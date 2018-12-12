@@ -37,10 +37,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// btm_biterms
+Rcpp::List btm_biterms(SEXP btm_model);
+RcppExport SEXP _BTM_btm_biterms(SEXP btm_modelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type btm_model(btm_modelSEXP);
+    rcpp_result_gen = Rcpp::wrap(btm_biterms(btm_model));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BTM_btm", (DL_FUNC) &_BTM_btm, 9},
     {"_BTM_btm_infer", (DL_FUNC) &_BTM_btm_infer, 3},
+    {"_BTM_btm_biterms", (DL_FUNC) &_BTM_btm_biterms, 1},
     {NULL, NULL, 0}
 };
 

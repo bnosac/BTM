@@ -9,3 +9,7 @@ btm_infer <- function(model, x, type) {
     .Call('_BTM_btm_infer', PACKAGE = 'BTM', model, x, type)
 }
 
+btm_biterms <- function(btm_model) {
+    .Call('_BTM_btm_biterms', PACKAGE = 'BTM', btm_model)
+}
+

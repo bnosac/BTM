@@ -50,5 +50,5 @@ Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng. A Biterm Topic Model For Shor
 \url{https://github.com/xiaohuiyan/BTM}, \url{https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/BTM-WWW13.pdf}
 }
 \seealso{
-\code{\link{BTM}}
+\code{\link{BTM}}, \code{\link{terms.BTM}}
 }

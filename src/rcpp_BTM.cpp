@@ -60,7 +60,7 @@ SEXP btm(Rcpp::CharacterVector x, int K, int W, double alpha, double beta, int i
     }
   }
   Rcpp::List out = Rcpp::List::create(
-    //Rcpp::Named("model") = model,
+    Rcpp::Named("model") = model,
     Rcpp::Named("K") = K,
     Rcpp::Named("W") = W,
     Rcpp::Named("alpha") = alpha,
@@ -105,4 +105,29 @@ Rcpp::NumericMatrix btm_infer(const Rcpp::List & model, Rcpp::CharacterVector x,
     }
   }
   return(scores);
+}
+
+
+
+// [[Rcpp::export]]
+Rcpp::List btm_biterms(SEXP btm_model) {
+  Rcpp::XPtr<Model> model(btm_model);
+  unsigned int nr_biterms = model->bs.size();
+  std::vector<int> term1;
+  std::vector<int> term2;
+  std::vector<int> topic;
+  for (unsigned int i = 0; i < nr_biterms; i++){
+    term1.push_back(model->bs[i].get_wi() + 1);
+    term2.push_back(model->bs[i].get_wj() + 1);
+    topic.push_back(model->bs[i].get_z() + 1);
+  }
+  Rcpp::List out = Rcpp::List::create(
+    Rcpp::Named("n") = nr_biterms,
+    Rcpp::Named("biterms") = Rcpp::List::create(
+      Rcpp::Named("term1") = term1,
+      Rcpp::Named("term2") = term2,
+      Rcpp::Named("topic") = topic
+    )
+  );
+  return out;
 }
