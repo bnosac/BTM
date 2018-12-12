@@ -52,7 +52,7 @@
 #' the rownames of the matrix indicate the token w}
 #' }
 #' @export
-#' @seealso \code{\link{predict.BTM}}, \code{\link{terms.BTM}}
+#' @seealso \code{\link{predict.BTM}}, \code{\link{terms.BTM}}, \code{\link{logLik.BTM}}
 #' @examples
 #' library(udpipe)
 #' data("brussels_reviews_anno", package = "udpipe")
@@ -129,7 +129,7 @@ print.BTM <- function(x, ...){
 #' @param ... not used
 #' @references Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng. A Biterm Topic Model For Short Text. WWW2013,
 #' \url{https://github.com/xiaohuiyan/BTM}, \url{https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/BTM-WWW13.pdf}
-#' @seealso \code{\link{BTM}}, \code{\link{terms.BTM}}
+#' @seealso \code{\link{BTM}}, \code{\link{terms.BTM}}, \code{\link{logLik.BTM}}
 #' @return a matrix containing containing P(z|d) - the probability of the topic given the biterms.\cr
 #' The matrix has one row for each unique doc_id (context identifier)
 #' which contains words part of the dictionary of the BTM model and has K columns, 
@@ -180,18 +180,16 @@ predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...)
 #' \item{If \code{type='tokens'}: }{Get the probability of the token given the topic P(w|z). 
 #' It returns a list of data.frames (one for each topic) where each data.frame contains columns token and probability ordered from high to low.
 #' The list is the same length as the number of topics.}
-#' \item{If \code{type='biterms'}: }{a list containing 3 elements: 
+#' \item{If \code{type='biterms'}: }{a list containing 2 elements: 
 #' \itemize{
-#' \item \code{n} which indicates the number of used to train the model
-#' \item \code{biterms} which is a data.frame with columns term1, term2, topic and likelihood, 
-#' indicating for all biterms found in the data the topic to which the biterm is assigned to as well as the 
-#' likelihood how well the biterm is fitted by the model, namely: \code{sum(phi[term1, ] * phi[term2, ] * theta)}
-#' \item \code{ll} the sum of the log of the likelihood column of the \code{biterms} element
+#' \item \code{n} which indicates the number of biterms used to train the model
+#' \item \code{biterms} which is a data.frame with columns term1, term2 and topic, 
+#' indicating for all biterms found in the data the topic to which the biterm is assigned to
 #' }
 #' Note that a biterm is unordered, in the output of \code{type='biterms'} term1 is always smaller than or equal to term2.}
 #' }
 #' @export
-#' @seealso \code{\link{BTM}}, \code{\link{predict.BTM}}
+#' @seealso \code{\link{BTM}}, \code{\link{predict.BTM}}, \code{\link{logLik.BTM}}
 #' @examples 
 #' library(udpipe)
 #' data("brussels_reviews_anno", package = "udpipe")
@@ -215,11 +213,7 @@ terms.BTM <- function(x, type = c("tokens", "biterms"), threshold = 0, top_n = 5
     bit$biterms <- data.frame(term1 = bit$biterms$term1, 
                               term2 = bit$biterms$term2,
                               topic = bit$biterms$topic, stringsAsFactors = FALSE)
-    bit$biterms$likelihood <- biterm_likelihood(model = x, 
-                                                term1 = bit$biterms$term1, 
-                                                term2 = bit$biterms$term2)
-    bit$ll <- sum(log(bit$biterms$likelihood))
-    bit <- bit[c("n", "ll", "biterms")]
+    bit <- bit[c("n", "biterms")]
     bit
   }else if(type == "tokens"){
     apply(x$phi, MARGIN=2, FUN=function(x){
@@ -230,16 +224,40 @@ terms.BTM <- function(x, type = c("tokens", "biterms"), threshold = 0, top_n = 5
       head(x, top_n)
     })
   }
-  
 }
 
 
-biterm_likelihood <- function(model, term1, term2){
-  stopifnot(all(c(term1, term2) %in% rownames(model$phi)))
-  lik <- mapply(w1 = term1, 
-                w2 = term2, 
+#' @title Get the likelihood of biterms in a BTM model
+#' @description Get the likelihood how good biterms are fit by the BTM model
+#' @param object an object of class BTM as returned by \code{\link{BTM}}
+#' @param data a data.frame with 2 columns term1 and term2 containing biterms. Defaults to the 
+#' biterms used to construct the model.
+#' @param ... other arguments not used
+#' @seealso \code{\link{BTM}}, \code{\link{predict.BTM}}, \code{\link{terms.BTM}}
+#' @return a list with elements
+#' \itemize{
+#' \item likelihood: a vector with the same number of rows as \code{data} containing the likelihood
+#' of the biterms alongside the BTM model. Calculated as \code{sum(phi[term1, ] * phi[term2, ] * theta)}.
+#' \item \code{ll} the sum of the log of the biterm likelihoods 
+#' }
+#' @export
+#' @examples
+#' library(udpipe)
+#' data("brussels_reviews_anno", package = "udpipe")
+#' x <- subset(brussels_reviews_anno, language == "nl")
+#' x <- subset(x, xpos %in% c("NN", "NNP", "NNS"))
+#' x <- x[, c("doc_id", "lemma")]
+#' 
+#' model  <- BTM(x, k = 5, iter = 5, trace = TRUE)
+#' fit <- logLik(model)
+#' fit$ll
+logLik.BTM <- function(object, data = terms.BTM(object, type = 'biterms')$biterms, ...){
+  stopifnot(inherits(data, "data.frame"))
+  stopifnot(all(c(data[[1]], data[[2]]) %in% rownames(object$phi)))
+  lik <- mapply(w1 = data[[1]], 
+                w2 = data[[2]], 
                 FUN = function(w1, w2){
-                  sum(model$phi[w1, ] * model$phi[w2, ] * model$theta)
+                  sum(object$phi[w1, ] * object$phi[w2, ] * object$theta)
                 })
-  lik
+  list(likelihood = lik, ll = sum(log(lik)))
 }

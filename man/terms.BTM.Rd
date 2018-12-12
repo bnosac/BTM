@@ -24,13 +24,11 @@ Depending on if type is set to 'tokens' or 'biterms' the following is returned:
 \item{If \code{type='tokens'}: }{Get the probability of the token given the topic P(w|z). 
 It returns a list of data.frames (one for each topic) where each data.frame contains columns token and probability ordered from high to low.
 The list is the same length as the number of topics.}
-\item{If \code{type='biterms'}: }{a list containing 3 elements: 
+\item{If \code{type='biterms'}: }{a list containing 2 elements: 
 \itemize{
-\item \code{n} which indicates the number of used to train the model
-\item \code{biterms} which is a data.frame with columns term1, term2, topic and likelihood, 
-indicating for all biterms found in the data the topic to which the biterm is assigned to as well as the 
-likelihood how well the biterm is fitted by the model, namely: \code{sum(phi[term1, ] * phi[term2, ] * theta)}
-\item \code{ll} the sum of the log of the likelihood column of the \code{biterms} element
+\item \code{n} which indicates the number of biterms used to train the model
+\item \code{biterms} which is a data.frame with columns term1, term2 and topic, 
+indicating for all biterms found in the data the topic to which the biterm is assigned to
 }
 Note that a biterm is unordered, in the output of \code{type='biterms'} term1 is always smaller than or equal to term2.}
 }
@@ -52,5 +50,5 @@ bi <- terms(model, type = "biterms")
 str(bi)
 }
 \seealso{
-\code{\link{BTM}}, \code{\link{predict.BTM}}
+\code{\link{BTM}}, \code{\link{predict.BTM}}, \code{\link{logLik.BTM}}
 }
