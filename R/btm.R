@@ -78,8 +78,8 @@ BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15
   iter <- as.integer(iter)
   window <- as.integer(window)
   stopifnot(inherits(data, "data.frame"))
-  if(ncol(data)){
-    data <- data.frame(doc_id = data[, 1], token = data[, 2], stringsAsFactors = FALSE)
+  if(ncol(data) == 2){
+    data <- data.frame(doc_id = data[[1]], token = data[[2]], stringsAsFactors = FALSE)
   }else{
     if(!all(c("doc_id", "token") %in% colnames(data))){
       stop("please provide in data a data.frame with 2 columns as indicated in the help of BTM")
@@ -149,8 +149,8 @@ print.BTM <- function(x, ...){
 predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...){
   type <- match.arg(type)
   stopifnot(inherits(newdata, "data.frame"))
-  if(ncol(newdata)){
-    newdata <- data.frame(doc_id = newdata[, 1], token = newdata[, 2], stringsAsFactors = FALSE)
+  if(ncol(newdata) == 2){
+    newdata <- data.frame(doc_id = newdata[[1]], token = newdata[[2]], stringsAsFactors = FALSE)
   }else{
     if(!all(c("doc_id", "token") %in% colnames(newdata))){
       stop("please provide in newdata a data.frame with 2 columns as indicated in the help of BTM")
