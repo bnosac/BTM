@@ -13,7 +13,7 @@ Description: Biterm Topic Models find topics in collections of short texts.
     which are word-document co-occurrence topic models.
     A biterm consists of two words co-occurring in the same short text window.  
     This context window can for example be a twitter message, a short answer on a survey, a sentence of a text or a document identifier. 
-    The techniques are explained in detail in the paper: 'A Biterm Topic Model For Short Text', available at <oai:CiteSeerX.psu:10.1.1.402.4032>.
+    The techniques are explained in detail in the paper 'A Biterm Topic Model For Short Text' by Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng (2013) <https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/BTM-WWW13.pdf>.
 License: Apache License 2.0
 Encoding: UTF-8
 LazyData: true
