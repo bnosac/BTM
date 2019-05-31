@@ -1,3 +1,7 @@
+### CHANGES IN BTM VERSION 0.2.1
+
+- Add URL in DESCRIPTION file
+
 ### CHANGES IN BTM VERSION 0.2
 
 - Allow to get all biterms from the model using terms.BTM

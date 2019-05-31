@@ -1,7 +1,7 @@
 Package: BTM
 Type: Package
 Title: Biterm Topic Models for Short Text
-Version: 0.2
+Version: 0.2.1
 Maintainer: Jan Wijffels <jwijffels@bnosac.be>
 Authors@R: c(
     person('Jan', 'Wijffels', role = c('aut', 'cre', 'cph'), email = 'jwijffels@bnosac.be', comment = "R wrapper"), 
@@ -15,6 +15,7 @@ Description: Biterm Topic Models find topics in collections of short texts.
     This context window can for example be a twitter message, a short answer on a survey, a sentence of a text or a document identifier. 
     The techniques are explained in detail in the paper 'A Biterm Topic Model For Short Text' by Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng (2013) <https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/BTM-WWW13.pdf>.
 License: Apache License 2.0
+URL: https://github.com/bnosac/BTM
 Encoding: UTF-8
 LazyData: true
 Imports: Rcpp, utils
