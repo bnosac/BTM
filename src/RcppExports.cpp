@@ -6,11 +6,12 @@
 using namespace Rcpp;
 
 // btm
-SEXP btm(Rcpp::CharacterVector x, int K, int W, double alpha, double beta, int iter, int win, bool background, int trace);
-RcppExport SEXP _BTM_btm(SEXP xSEXP, SEXP KSEXP, SEXP WSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP iterSEXP, SEXP winSEXP, SEXP backgroundSEXP, SEXP traceSEXP) {
+SEXP btm(Rcpp::List biterms, Rcpp::CharacterVector x, int K, int W, double alpha, double beta, int iter, int win, bool background, int trace);
+RcppExport SEXP _BTM_btm(SEXP bitermsSEXP, SEXP xSEXP, SEXP KSEXP, SEXP WSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP iterSEXP, SEXP winSEXP, SEXP backgroundSEXP, SEXP traceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type biterms(bitermsSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type x(xSEXP);
     Rcpp::traits::input_parameter< int >::type K(KSEXP);
     Rcpp::traits::input_parameter< int >::type W(WSEXP);
@@ -20,7 +21,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type win(winSEXP);
     Rcpp::traits::input_parameter< bool >::type background(backgroundSEXP);
     Rcpp::traits::input_parameter< int >::type trace(traceSEXP);
-    rcpp_result_gen = Rcpp::wrap(btm(x, K, W, alpha, beta, iter, win, background, trace));
+    rcpp_result_gen = Rcpp::wrap(btm(biterms, x, K, W, alpha, beta, iter, win, background, trace));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -50,7 +51,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_BTM_btm", (DL_FUNC) &_BTM_btm, 9},
+    {"_BTM_btm", (DL_FUNC) &_BTM_btm, 10},
     {"_BTM_btm_infer", (DL_FUNC) &_BTM_btm_infer, 3},
     {"_BTM_btm_biterms", (DL_FUNC) &_BTM_btm_biterms, 1},
     {NULL, NULL, 0}

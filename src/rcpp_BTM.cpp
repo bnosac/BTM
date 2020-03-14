@@ -10,23 +10,49 @@
 
 #include "model.h"
 #include "infer.h"
-
 using namespace std;
 
 // [[Rcpp::export]]
-SEXP btm(Rcpp::CharacterVector x, int K, int W, double alpha, double beta, int iter, int win = 15, bool background = false, int trace = 0) {
+SEXP btm(Rcpp::List biterms, Rcpp::CharacterVector x, int K, int W, double alpha, double beta, int iter, int win = 15, bool background = false, int trace = 0) {
   Rcpp::Function format_posixct("format.POSIXct");
   Rcpp::Function sys_time("Sys.time");
   int save_step = 1;
   bool has_background = background;
+  int biterms_size = biterms.size();
+  Rcpp::CharacterVector doc_ids = x.attr("names");
+  std::string context_id;
+  Rcpp::List context_id_biterm;
+  Rcpp::IntegerVector term1;
+  Rcpp::IntegerVector term2;
+  Rcpp::IntegerVector cooc;
+  
   Rcpp::XPtr<Model> model(new Model(K, W, alpha, beta, iter, save_step, has_background), true);
   std::string line;
+
   for (int idx = 0; idx < x.size(); idx++){
     line = Rcpp::as<std::string>(x[idx]);
+    context_id = Rcpp::as<std::string>(doc_ids[idx]);
     Doc doc(line);
-    doc.gen_biterms(model->bs, win);
+    if(biterms_size > 0){
+      context_id_biterm = Rcpp::as<Rcpp::List>(biterms(context_id));
+      term1 = context_id_biterm["term1"];
+      term2 = context_id_biterm["term2"];
+      cooc = context_id_biterm["cooc"];
+      for (int j = 0; j < term1.size(); j++){
+        if(cooc.length() > 0){
+          for (int nr = 0; nr < cooc[j]; nr++){
+            model->bs.push_back( Biterm(term1[j], term2[j]) );
+          }
+        }else{
+          model->bs.push_back( Biterm(term1[j], term2[j]) );  
+        }
+      }
+    }else{
+      doc.gen_biterms(model->bs, win);
+    }
     for (int i = 0; i < doc.size(); ++i) {
       int w = doc.get_w(i);
+      // the background word distribution
       model->pw_b[w] += 1;
     }
   }

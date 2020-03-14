@@ -4,7 +4,8 @@
 \alias{predict.BTM}
 \title{Predict function for a Biterm Topic Model}
 \usage{
-\method{predict}{BTM}(object, newdata, type = c("sum_b", "sub_w", "mix"), ...)
+\method{predict}{BTM}(object, newdata, type = c("sum_b", "sub_w", "mix"),
+  ...)
 }
 \arguments{
 \item{object}{an object of class BTM as returned by \code{\link{BTM}}}

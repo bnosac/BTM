@@ -25,6 +25,12 @@
 #' @param background logical if set to \code{TRUE}, the first topic is set to a background topic that 
 #' equals to the empirical word distribution. This can be used to filter out common words. Defaults to FALSE.
 #' @param trace logical indicating to print out evolution of the Gibbs sampling iterations. Defaults to FALSE.
+#' @param biterms optionally, your own set of biterms to use for modelling. 
+#' This argument should be a data.frame with column names doc_id, term1, term2 and cooc, indicating how many times each biterm (as indicated by terms term1 and term2) 
+#' is occurring within a certain doc_id. The field cooc indicates how many times this biterm happens with the doc_id.
+#' Note that doc_id's which are not in \code{data} are not allowed, as well as terms (in term1 and term2) which are not also in \code{data}.
+#' See the examples. 
+#' If provided, ignores the \code{window} argument and the \code{data} argument will only be used to calculate the background word frequency distribution.
 #' @note 
 #' A biterm is defined as a pair of words co-occurring in the same text window. 
 #' If you have as an example a document with sequence of words \code{'A B C B'}, and assuming the window size is set to 3, 
@@ -66,10 +72,38 @@
 #' 
 #' ## Another small run with first topic the background word distribution
 #' set.seed(123456)
-#' model  <- BTM(x, k = 5, beta = 0.01, iter = 10, background = TRUE)
+#' model <- BTM(x, k = 5, beta = 0.01, iter = 10, background = TRUE)
 #' model
 #' terms(model)
-BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15, background = FALSE, trace = FALSE){
+#' 
+#' ##
+#' ## You can also provide your own set of biterms to cluster upon
+#' ## Example: cluster nouns and adjectives in the neighbourhood of one another
+#' ##
+#' library(data.table)
+#' library(udpipe)
+#' x <- subset(brussels_reviews_anno, language == "nl")
+#' x <- head(x, 5500) # take a sample to speed things up on CRAN
+#' biterms <- as.data.table(x)
+#' biterms <- biterms[, cooccurrence(x = lemma, 
+#'                                   relevant = xpos %in% c("NN", "NNP", "NNS", "JJ"),
+#'                                   skipgram = 2), 
+#'                    by = list(doc_id)]
+#' head(biterms)
+#' set.seed(123456)
+#' x <- subset(x, xpos %in% c("NN", "NNP", "NNS", "JJ"))
+#' x <- x[, c("doc_id", "lemma")]
+#' model <- BTM(x, k = 5, beta = 0.01, iter = 10, background = TRUE, 
+#'              biterms = biterms, trace = 10)
+#' model
+#' terms(model)
+#' bitermset <- terms(model, "biterms")
+#' head(bitermset$biterms, 100)
+#' 
+#' bitermset$n
+#' sum(biterms$cooc)
+BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15, background = FALSE, trace = FALSE, 
+                biterms){
   trace <- as.integer(trace)
   background <- as.integer(as.logical(background))
   stopifnot(k >= 1)
@@ -90,12 +124,42 @@ BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15
   data$word <- factor(data$token)
   vocabulary <- data.frame(id = seq_along(levels(data$word)) - 1L, token = levels(data$word), stringsAsFactors = FALSE)
   data$word <- as.integer(data$word) - 1L
+  
   voc <- max(data$word) + 1
   context <- split(data$word, data$doc_id)
   context <- sapply(context, FUN=function(x) paste(x, collapse = " "))
-
+  
+  ## Handle manual set of biterms provided by user
+  if(missing(biterms)){
+    biterms <- data.frame(doc_id = character(), term1 = integer(), term2 = integer(), cooc = integer(), stringsAsFactors = FALSE)
+    biterms <- split(biterms, biterms$doc_id)
+  }else{
+    stopifnot(is.data.frame(biterms))
+    if(!all(c("doc_id", "term1", "term2") %in% colnames(biterms))){
+      stop("please provide in biterms a data.frame with at least 3 columns: doc_id, term1, term2, cooc - see the example in the help of BTM")
+    }
+    if(!all("cooc" %in% colnames(biterms))){
+      biterms$cooc <- 1L
+    }else{
+      biterms$cooc <- as.integer(biterms$cooc)
+    }
+    recode <- function(x, from, to){
+      to[match(x, from)]
+    }
+    biterms$term1 <- recode(biterms$term1, from = vocabulary$token, to = vocabulary$id)
+    biterms$term2 <- recode(biterms$term2, from = vocabulary$token, to = vocabulary$id)
+    if(anyNA(biterms$term1) || anyNA(biterms$term2)){
+      stop("all terms in biterms should at least be available in data as well")
+    }
+    if(!all(biterms$doc_id %in% names(context))){
+      stop("all doc_id's of the biterms should at least be available data as well")
+    }
+    biterms <- split(biterms, factor(biterms$doc_id, levels = names(context)), drop = FALSE)
+    biterms <- lapply(biterms, FUN=function(x) as.list(x))
+  }
+  
   ## build the model
-  model <- btm(context, K = k, W = voc, alpha = alpha, beta = beta, iter = iter, win = window, background = background, trace = as.integer(trace))
+  model <- btm(biterms = biterms, x = context, K = k, W = voc, alpha = alpha, beta = beta, iter = iter, win = window, background = background, trace = as.integer(trace))
   
   ## make sure integer numbers are back tokens again
   rownames(model$phi) <- vocabulary$token

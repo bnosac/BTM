@@ -1,3 +1,7 @@
+### CHANGES IN BTM VERSION 0.3
+
+- Allow to provide your own set of biterms to cluster upon
+
 ### CHANGES IN BTM VERSION 0.2.1
 
 - Add URL in DESCRIPTION file
