@@ -135,6 +135,9 @@ BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15
     biterms <- split(biterms, biterms$doc_id)
   }else{
     stopifnot(is.data.frame(biterms))
+    if(anyNA(biterms)){
+      stop("make sure there are no missing data in biterms")
+    }
     if(!all(c("doc_id", "term1", "term2") %in% colnames(biterms))){
       stop("please provide in biterms a data.frame with at least 3 columns: doc_id, term1, term2, cooc - see the example in the help of BTM")
     }
