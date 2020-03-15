@@ -140,28 +140,33 @@ topicterms
 ```
 library(udpipe)
 library(tm)
+library(data.table)
 data("brussels_reviews", package = "udpipe")
+exclude <- stopwords("nl")
 
 ## Do annotation on Dutch text
 anno <- subset(brussels_reviews, language %in% "nl")
 anno <- data.frame(doc_id = anno$id, text = anno$feedback, stringsAsFactors = FALSE)
 anno <- udpipe(anno, "dutch", trace = 10)
-anno <- cbind_dependencies(anno)
+anno <- setDT(anno)
+anno <- merge(anno, anno, 
+              by.x = c("doc_id", "paragraph_id", "sentence_id", "head_token_id"), 
+              by.y = c("doc_id", "paragraph_id", "sentence_id", "token_id"), 
+              all.x = TRUE, all.y = FALSE, suffixes = c("", "_parent"), sort = FALSE)
 
 ## Specify a set of relationships you are interested in (e.g. objects of a verb)
-biterms <- subset(anno, !is.na(lemma_parent))
-biterms <- subset(biterms, dep_rel %in% c("obj"))
+anno$relevant <- anno$dep_rel %in% c("obj") & !is.na(anno$lemma_parent)
+biterms <- subset(anno, relevant == TRUE)
 biterms <- data.frame(doc_id = biterms$doc_id, 
                       term1 = biterms$lemma, 
                       term2 = biterms$lemma_parent,
                       cooc = 1, 
                       stringsAsFactors = FALSE)
-
-## Remove terms not interested in and put in x terms such that frequency stats of terms can be used
-exclude <- stopwords("nl")                      
 biterms <- subset(biterms, !term1 %in% exclude & !term2 %in% exclude)
-x <- rbind(data.frame(doc_id = biterms$doc_id, lemma = biterms$term1, stringsAsFactors = FALSE),
-           data.frame(doc_id = biterms$doc_id, lemma = biterms$term2, stringsAsFactors = FALSE))
+
+## Put in x only terms whch were used in the biterms object such that frequency stats of terms can be computed in BTM
+anno <- anno[, keep := relevant | (token_id %in% head_token_id[relevant == TRUE]), by = list(doc_id, paragraph_id, sentence_id)]
+x <- subset(anno, keep == TRUE, select = c("doc_id", "lemma"))
 x <- subset(x, !lemma %in% exclude)
 
 ## Build the topic model
