@@ -25,12 +25,12 @@
 #' @param background logical if set to \code{TRUE}, the first topic is set to a background topic that 
 #' equals to the empirical word distribution. This can be used to filter out common words. Defaults to FALSE.
 #' @param trace logical indicating to print out evolution of the Gibbs sampling iterations. Defaults to FALSE.
-#' @param biterms optionally, your own set of biterms to use for modelling. 
+#' @param biterms optionally, your own set of biterms to use for modelling.\cr 
 #' This argument should be a data.frame with column names doc_id, term1, term2 and cooc, indicating how many times each biterm (as indicated by terms term1 and term2) 
-#' is occurring within a certain doc_id. The field cooc indicates how many times this biterm happens with the doc_id.
+#' is occurring within a certain doc_id. The field cooc indicates how many times this biterm happens with the doc_id. \cr
 #' Note that doc_id's which are not in \code{data} are not allowed, as well as terms (in term1 and term2) which are not also in \code{data}.
-#' See the examples. 
-#' If provided, ignores the \code{window} argument and the \code{data} argument will only be used to calculate the background word frequency distribution.
+#' See the examples.\cr 
+#' If provided, the \code{window} argument is ignored and the \code{data} argument will only be used to calculate the background word frequency distribution.
 #' @note 
 #' A biterm is defined as a pair of words co-occurring in the same text window. 
 #' If you have as an example a document with sequence of words \code{'A B C B'}, and assuming the window size is set to 3, 
