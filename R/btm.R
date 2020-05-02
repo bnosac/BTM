@@ -31,6 +31,7 @@
 #' Note that doc_id's which are not in \code{data} are not allowed, as well as terms (in term1 and term2) which are not also in \code{data}.
 #' See the examples.\cr 
 #' If provided, the \code{window} argument is ignored and the \code{data} argument will only be used to calculate the background word frequency distribution.
+#' @param detailed logical indicating to return detailed output containing as well the vocabulary and the biterms used to construct the model. Defaults to FALSE.
 #' @note 
 #' A biterm is defined as a pair of words co-occurring in the same text window. 
 #' If you have as an example a document with sequence of words \code{'A B C B'}, and assuming the window size is set to 3, 
@@ -56,6 +57,8 @@
 #' \item{theta: a vector with the topic probability p(z) which is determinated by the overall proportions of biterms in it}
 #' \item{phi: a matrix of dimension W x K with one row for each token in the data. This matrix contains the probability of the token given the topic P(w|z).
 #' the rownames of the matrix indicate the token w}
+#' \item{vocab: a data.frame with columns token and freq indicating the frequency of occurrence of the tokens in \code{data}. Only provided in case argument \code{detailed} is set to \code{TRUE}}
+#' \item{biterms: the result of a call to \code{terms} with type set to biterms, containing all the biterms used in the model. Only provided in case argument \code{detailed} is set to \code{TRUE}}
 #' }
 #' @export
 #' @seealso \code{\link{predict.BTM}}, \code{\link{terms.BTM}}, \code{\link{logLik.BTM}}
@@ -94,7 +97,7 @@
 #' x <- subset(x, xpos %in% c("NN", "NNP", "NNS", "JJ"))
 #' x <- x[, c("doc_id", "lemma")]
 #' model <- BTM(x, k = 5, beta = 0.01, iter = 10, background = TRUE, 
-#'              biterms = biterms, trace = 10)
+#'              biterms = biterms, trace = 10, detailed = TRUE)
 #' model
 #' terms(model)
 #' bitermset <- terms(model, "biterms")
@@ -102,8 +105,31 @@
 #' 
 #' bitermset$n
 #' sum(biterms$cooc)
+#' 
+#' 
+#' \dontrun{
+#' ##
+#' ## Visualisation either using the textplot or the LDAvis package
+#' ##
+#' library(textplot)
+#' library(ggraph)
+#' library(concaveman)
+#' plot(model, top_n = 4)
+#' 
+#' library(LDAvis)
+#' docsize <- table(x$doc_id)
+#' scores  <- predict(model, x)
+#' scores  <- scores[names(docsize), ]
+#' json <- createJSON(
+#'   phi = t(model$phi), 
+#'   theta = scores, 
+#'   doc.length = as.integer(docsize),
+#'   vocab = model$vocabulary$token, 
+#'   term.frequency = model$vocabulary$freq)
+#' serVis(json)
+#' }
 BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15, background = FALSE, trace = FALSE, 
-                biterms){
+                biterms, detailed = FALSE){
   trace <- as.integer(trace)
   background <- as.integer(as.logical(background))
   stopifnot(k >= 1)
@@ -122,7 +148,18 @@ BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15
   data <- data[!is.na(data$doc_id) & !is.na(data$token), ]
   ## Convert tokens to integer numbers which need to be pasted into a string separated by spaces
   data$word <- factor(data$token)
-  vocabulary <- data.frame(id = seq_along(levels(data$word)) - 1L, token = levels(data$word), stringsAsFactors = FALSE)
+  if(detailed){
+    freq <- table(data$word)
+    freq <- as.data.frame(freq, responseName = "freq", stringsAsFactors = FALSE)
+    vocabulary <- data.frame(id = seq_along(levels(data$word)) - 1L, 
+                             token = levels(data$word), 
+                             freq = freq$freq[match(levels(data$word), freq$Var1)],
+                             stringsAsFactors = FALSE)
+  }else{
+    vocabulary <- data.frame(id = seq_along(levels(data$word)) - 1L, 
+                             token = levels(data$word), 
+                             stringsAsFactors = FALSE)
+  }
   data$word <- as.integer(data$word) - 1L
   
   voc <- max(data$word) + 1
@@ -163,10 +200,14 @@ BTM <- function(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000, window = 15
   
   ## build the model
   model <- btm(biterms = biterms, x = context, K = k, W = voc, alpha = alpha, beta = beta, iter = iter, win = window, background = background, trace = as.integer(trace))
-  
   ## make sure integer numbers are back tokens again
   rownames(model$phi) <- vocabulary$token
+  ## also include vocabulary
   class(model) <- "BTM"
+  if(detailed){
+    model$vocabulary <- vocabulary[c("token", "freq")]
+    model$biterms <- terms.BTM(model, type = "biterms")
+  }
   model
 }
 
@@ -315,7 +356,7 @@ terms.BTM <- function(x, type = c("tokens", "biterms"), threshold = 0, top_n = 5
 #' x <- subset(x, xpos %in% c("NN", "NNP", "NNS"))
 #' x <- x[, c("doc_id", "lemma")]
 #' 
-#' model  <- BTM(x, k = 5, iter = 5, trace = TRUE)
+#' model  <- BTM(x, k = 5, iter = 5, trace = TRUE, detailed = TRUE)
 #' fit <- logLik(model)
 #' fit$ll
 logLik.BTM <- function(object, data = terms.BTM(object, type = 'biterms')$biterms, ...){

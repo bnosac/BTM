@@ -4,8 +4,7 @@
 \alias{logLik.BTM}
 \title{Get the likelihood of biterms in a BTM model}
 \usage{
-\method{logLik}{BTM}(object, data = terms.BTM(object, type =
-  "biterms")$biterms, ...)
+\method{logLik}{BTM}(object, data = terms.BTM(object, type = "biterms")$biterms, ...)
 }
 \arguments{
 \item{object}{an object of class BTM as returned by \code{\link{BTM}}}
@@ -33,7 +32,7 @@ x <- subset(brussels_reviews_anno, language == "nl")
 x <- subset(x, xpos \%in\% c("NN", "NNP", "NNS"))
 x <- x[, c("doc_id", "lemma")]
 
-model  <- BTM(x, k = 5, iter = 5, trace = TRUE)
+model  <- BTM(x, k = 5, iter = 5, trace = TRUE, detailed = TRUE)
 fit <- logLik(model)
 fit$ll
 }

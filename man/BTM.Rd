@@ -4,8 +4,18 @@
 \alias{BTM}
 \title{Construct a Biterm Topic Model on Short Text}
 \usage{
-BTM(data, k = 5, alpha = 50/k, beta = 0.01, iter = 1000,
-  window = 15, background = FALSE, trace = FALSE, biterms)
+BTM(
+  data,
+  k = 5,
+  alpha = 50/k,
+  beta = 0.01,
+  iter = 1000,
+  window = 15,
+  background = FALSE,
+  trace = FALSE,
+  biterms,
+  detailed = FALSE
+)
 }
 \arguments{
 \item{data}{a tokenised data frame containing one row per token with 2 columns 
@@ -35,6 +45,8 @@ is occurring within a certain doc_id. The field cooc indicates how many times th
 Note that doc_id's which are not in \code{data} are not allowed, as well as terms (in term1 and term2) which are not also in \code{data}.
 See the examples.\cr 
 If provided, the \code{window} argument is ignored and the \code{data} argument will only be used to calculate the background word frequency distribution.}
+
+\item{detailed}{logical indicating to return detailed output containing as well the vocabulary and the biterms used to construct the model. Defaults to FALSE.}
 }
 \value{
 an object of class BTM which is a list containing
@@ -49,6 +61,8 @@ an object of class BTM which is a list containing
 \item{theta: a vector with the topic probability p(z) which is determinated by the overall proportions of biterms in it}
 \item{phi: a matrix of dimension W x K with one row for each token in the data. This matrix contains the probability of the token given the topic P(w|z).
 the rownames of the matrix indicate the token w}
+\item{vocab: a data.frame with columns token and freq indicating the frequency of occurrence of the tokens in \code{data}. Only provided in case argument \code{detailed} is set to \code{TRUE}}
+\item{biterms: the result of a call to \code{terms} with type set to biterms, containing all the biterms used in the model. Only provided in case argument \code{detailed} is set to \code{TRUE}}
 }
 }
 \description{
@@ -112,7 +126,7 @@ set.seed(123456)
 x <- subset(x, xpos \%in\% c("NN", "NNP", "NNS", "JJ"))
 x <- x[, c("doc_id", "lemma")]
 model <- BTM(x, k = 5, beta = 0.01, iter = 10, background = TRUE, 
-             biterms = biterms, trace = 10)
+             biterms = biterms, trace = 10, detailed = TRUE)
 model
 terms(model)
 bitermset <- terms(model, "biterms")
@@ -120,6 +134,29 @@ head(bitermset$biterms, 100)
 
 bitermset$n
 sum(biterms$cooc)
+
+
+\dontrun{
+##
+## Visualisation either using the textplot or the LDAvis package
+##
+library(textplot)
+library(ggraph)
+library(concaveman)
+plot(model, top_n = 4)
+
+library(LDAvis)
+docsize <- table(x$doc_id)
+scores  <- predict(model, x)
+scores  <- scores[names(docsize), ]
+json <- createJSON(
+  phi = t(model$phi), 
+  theta = scores, 
+  doc.length = as.integer(docsize),
+  vocab = model$vocabulary$token, 
+  term.frequency = model$vocabulary$freq)
+serVis(json)
+}
 }
 \references{
 Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng. A Biterm Topic Model For Short Text. WWW2013,

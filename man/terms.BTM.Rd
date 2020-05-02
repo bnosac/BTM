@@ -4,8 +4,7 @@
 \alias{terms.BTM}
 \title{Get highest token probabilities for each topic or get biterms used in the model}
 \usage{
-\method{terms}{BTM}(x, type = c("tokens", "biterms"), threshold = 0,
-  top_n = 5, ...)
+\method{terms}{BTM}(x, type = c("tokens", "biterms"), threshold = 0, top_n = 5, ...)
 }
 \arguments{
 \item{x}{an object of class BTM as returned by \code{\link{BTM}}}

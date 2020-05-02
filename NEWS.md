@@ -1,3 +1,8 @@
+### CHANGES IN BTM VERSION 0.3.1
+
+- Allow in BTM to return as well the biterms as the vocabulary using an extra argument called detailed. For compatibility with the textplot package.
+- Added in the docs examples of plotting but put these in dontrun blocks to avoid package dependencies
+
 ### CHANGES IN BTM VERSION 0.3
 
 - Allow to provide your own set of biterms to cluster upon
