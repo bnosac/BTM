@@ -4,10 +4,10 @@
 \alias{terms.data.frame}
 \title{Get the set of Biterms from a tokenised data frame}
 \usage{
-\method{terms}{data.frame}(data, type = c("tokens", "biterms"), window = 15, ...)
+\method{terms}{data.frame}(x, type = c("tokens", "biterms"), window = 15, ...)
 }
 \arguments{
-\item{data}{a tokenised data frame containing one row per token with 2 columns 
+\item{x}{a tokenised data frame containing one row per token with 2 columns 
 \itemize{
 \item the first column is a context identifier (e.g. a tweet id, a document id, a sentence id, an identifier of a survey answer, an identifier of a part of a text)
 \item the second column is a column called of type character containing the sequence of words occurring within the context identifier 

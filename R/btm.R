@@ -339,7 +339,7 @@ terms.BTM <- function(x, type = c("tokens", "biterms"), threshold = 0, top_n = 5
 #' @description
 #' This extracts words occurring in the neighbourhood of one another, within a certain window range.
 #' The default setting provides the biterms used when fitting \code{\link{BTM}} with the default window parameter.
-#' @param data a tokenised data frame containing one row per token with 2 columns 
+#' @param x a tokenised data frame containing one row per token with 2 columns 
 #' \itemize{
 #' \item the first column is a context identifier (e.g. a tweet id, a document id, a sentence id, an identifier of a survey answer, an identifier of a part of a text)
 #' \item the second column is a column called of type character containing the sequence of words occurring within the context identifier 
@@ -377,10 +377,11 @@ terms.BTM <- function(x, type = c("tokens", "biterms"), threshold = 0, top_n = 5
 #' str(biterms)
 #' tokens <- terms(x, type = "tokens")
 #' str(tokens)
-terms.data.frame <- function(data, type = c("tokens", "biterms"), window = 15, ...){
+terms.data.frame <- function(x, type = c("tokens", "biterms"), window = 15, ...){
   type <- match.arg(type)
   stopifnot(window >= 1)
   window <- as.integer(window)
+  data <- x
   stopifnot(inherits(data, "data.frame"))
   if(ncol(data) == 2){
     data <- data.frame(doc_id = data[[1]], token = data[[2]], stringsAsFactors = FALSE)
