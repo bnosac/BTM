@@ -168,11 +168,11 @@ public:
   T &operator[](int i) {
 	if (i >= (int)p.size())
 	  Rcpp::Rcout << "ERR: index=" << i << ", size=" << p.size() << endl;
-	assert(i < p.size());
+	assert(i < ((int)p.size()));
 	return p[i]; 
   }
 
-  const T& operator[](int i) const{assert(i<p.size()); return p[i];}
+  const T& operator[](int i) const{assert(i<((int)p.size())); return p[i];}
 
   Pvec<T> operator+(const T & v){
 	Pvec<T> tp(p.size());
