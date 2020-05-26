@@ -28,7 +28,7 @@ BTM(
 
 \item{alpha}{numeric, indicating the symmetric dirichlet prior probability of a topic P(z). Defaults to 50/k.}
 
-\item{beta}{numeric, indicating the symmetric dirichlet prior probability of a word given the topic P(w|z). Defaults to 0.1.}
+\item{beta}{numeric, indicating the symmetric dirichlet prior probability of a word given the topic P(w|z). Defaults to 0.01.}
 
 \item{iter}{integer with the number of iterations of Gibbs sampling}
 

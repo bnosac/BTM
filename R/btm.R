@@ -19,7 +19,7 @@
 #' }
 #' @param k integer with the number of topics to identify
 #' @param alpha numeric, indicating the symmetric dirichlet prior probability of a topic P(z). Defaults to 50/k.
-#' @param beta numeric, indicating the symmetric dirichlet prior probability of a word given the topic P(w|z). Defaults to 0.1.
+#' @param beta numeric, indicating the symmetric dirichlet prior probability of a word given the topic P(w|z). Defaults to 0.01.
 #' @param iter integer with the number of iterations of Gibbs sampling
 #' @param window integer with the window size for biterm extraction. Defaults to 15.
 #' @param background logical if set to \code{TRUE}, the first topic is set to a background topic that 
@@ -408,7 +408,7 @@ terms.data.frame <- function(x, type = c("tokens", "biterms"), window = 15, ...)
   context <- split(data$word, data$doc_id)
   context <- sapply(context, FUN=function(x) paste(x, collapse = " "))
   
-  from         <- vocabulary$id
+  from         <- vocabulary$id + 1L
   to           <- vocabulary$token 
   
   bit <- btm_biterms_text(x = context, W = voc, win = window)
