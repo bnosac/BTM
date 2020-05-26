@@ -28,7 +28,7 @@ SEXP btm(Rcpp::List biterms, Rcpp::CharacterVector x, int K, int W, double alpha
   
   Rcpp::XPtr<Model> model(new Model(K, W, alpha, beta, iter, save_step, has_background), true);
   std::string line;
-
+  
   for (int idx = 0; idx < x.size(); idx++){
     line = Rcpp::as<std::string>(x[idx]);
     context_id = Rcpp::as<std::string>(doc_ids[idx]);
@@ -153,6 +153,53 @@ Rcpp::List btm_biterms(SEXP btm_model) {
       Rcpp::Named("term1") = term1,
       Rcpp::Named("term2") = term2,
       Rcpp::Named("topic") = topic
+    )
+  );
+  return out;
+}
+
+
+
+// [[Rcpp::export]]
+Rcpp::List btm_biterms_text(Rcpp::CharacterVector x, int W, int win = 15) {
+  int K = 5;
+  double alpha = 50/5;
+  double beta = 0.01;
+  int iter = 1;
+  int save_step = 1;
+  bool has_background = false;
+  
+  Rcpp::CharacterVector doc_ids = x.attr("names");
+  std::string context_id;
+  
+  Rcpp::XPtr<Model> model(new Model(K = K, W = W, alpha = alpha, beta = beta, iter = iter, save_step = save_step, has_background = has_background), true);
+  std::string line;
+  
+  for (int idx = 0; idx < x.size(); idx++){
+    line = Rcpp::as<std::string>(x[idx]);
+    context_id = Rcpp::as<std::string>(doc_ids[idx]);
+    Doc doc(line);
+    doc.gen_biterms(model->bs, win);
+    for (int i = 0; i < doc.size(); ++i) {
+      int w = doc.get_w(i);
+      // the background word distribution
+      model->pw_b[w] += 1;
+    }
+  }
+  model->pw_b.normalize();
+  
+  unsigned int nr_biterms = model->bs.size();
+  std::vector<int> term1;
+  std::vector<int> term2;
+  for (unsigned int i = 0; i < nr_biterms; i++){
+    term1.push_back(model->bs[i].get_wi() + 1);
+    term2.push_back(model->bs[i].get_wj() + 1);
+  }
+  Rcpp::List out = Rcpp::List::create(
+    Rcpp::Named("n") = nr_biterms,
+    Rcpp::Named("biterms") = Rcpp::List::create(
+      Rcpp::Named("term1") = term1,
+      Rcpp::Named("term2") = term2
     )
   );
   return out;

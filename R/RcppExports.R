@@ -13,3 +13,7 @@ btm_biterms <- function(btm_model) {
     .Call('_BTM_btm_biterms', PACKAGE = 'BTM', btm_model)
 }
 
+btm_biterms_text <- function(x, W, win = 15L) {
+    .Call('_BTM_btm_biterms_text', PACKAGE = 'BTM', x, W, win)
+}
+

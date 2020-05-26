@@ -49,11 +49,25 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// btm_biterms_text
+Rcpp::List btm_biterms_text(Rcpp::CharacterVector x, int W, int win);
+RcppExport SEXP _BTM_btm_biterms_text(SEXP xSEXP, SEXP WSEXP, SEXP winSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type W(WSEXP);
+    Rcpp::traits::input_parameter< int >::type win(winSEXP);
+    rcpp_result_gen = Rcpp::wrap(btm_biterms_text(x, W, win));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BTM_btm", (DL_FUNC) &_BTM_btm, 10},
     {"_BTM_btm_infer", (DL_FUNC) &_BTM_btm_infer, 3},
     {"_BTM_btm_biterms", (DL_FUNC) &_BTM_btm_biterms, 1},
+    {"_BTM_btm_biterms_text", (DL_FUNC) &_BTM_btm_biterms_text, 3},
     {NULL, NULL, 0}
 };
 

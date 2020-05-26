@@ -1,3 +1,7 @@
+### CHANGES IN BTM VERSION 0.3.2
+
+- Added terms.data.frame
+
 ### CHANGES IN BTM VERSION 0.3.1
 
 - Allow in BTM to return as well the biterms as the vocabulary using an extra argument called detailed. For compatibility with the textplot package.

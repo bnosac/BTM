@@ -18,7 +18,7 @@
 \item{...}{not used}
 }
 \value{
-Depending on if type is set to 'tokens' or 'biterms' the following is returned:
+Depending if type is set to 'tokens' or 'biterms' the following is returned:
 \itemize{
 \item{If \code{type='tokens'}: }{Get the probability of the token given the topic P(w|z). 
 It returns a list of data.frames (one for each topic) where each data.frame contains columns token and probability ordered from high to low.
