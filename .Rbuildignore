@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 LICENSE.txt
 dev
+.travis.yml
