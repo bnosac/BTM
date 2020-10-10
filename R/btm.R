@@ -63,9 +63,7 @@
 #' @export
 #' @seealso \code{\link{predict.BTM}}, \code{\link{terms.BTM}}, \code{\link{logLik.BTM}}
 #' @examples
-#' \dontshow{if(require(udpipe))
-#' \{
-#' }
+#' \dontshow{if(require(udpipe) & require(data.table))\{}
 #' library(udpipe)
 #' data("brussels_reviews_anno", package = "udpipe")
 #' x <- subset(brussels_reviews_anno, language == "nl")
@@ -109,10 +107,7 @@
 #' bitermset$n
 #' sum(biterms$cooc)
 #' 
-#' \dontshow{
-#' \}
-#' # End of main if statement running only if the required packages are installed
-#' }
+#' \dontshow{\} # End of main if statement running only if the required packages are installed}
 #' \dontrun{
 #' ##
 #' ## Visualisation either using the textplot or the LDAvis package
@@ -250,6 +245,7 @@ print.BTM <- function(x, ...){
 #' one for each topic. 
 #' @export
 #' @examples 
+#' \dontshow{if(require(udpipe))\{}
 #' library(udpipe)
 #' data("brussels_reviews_anno", package = "udpipe")
 #' x <- subset(brussels_reviews_anno, language == "nl")
@@ -260,6 +256,7 @@ print.BTM <- function(x, ...){
 #' scores <- predict(model, newdata = x, type = "sub_w")
 #' scores <- predict(model, newdata = x, type = "mix")
 #' head(scores)
+#' \dontshow{\} # End of main if statement running only if the required packages are installed}
 predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...){
   type <- match.arg(type)
   stopifnot(inherits(newdata, "data.frame"))
@@ -305,6 +302,7 @@ predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...)
 #' @export
 #' @seealso \code{\link{BTM}}, \code{\link{predict.BTM}}, \code{\link{logLik.BTM}}
 #' @examples 
+#' \dontshow{if(require(udpipe))\{}
 #' library(udpipe)
 #' data("brussels_reviews_anno", package = "udpipe")
 #' x <- subset(brussels_reviews_anno, language == "nl")
@@ -316,6 +314,7 @@ predict.BTM <- function(object, newdata, type = c("sum_b", "sub_w", "mix"), ...)
 #' terms(model, threshold = 0.01, top_n = +Inf)
 #' bi <- terms(model, type = "biterms")
 #' str(bi)
+#' \dontshow{\} # End of main if statement running only if the required packages are installed}
 terms.BTM <- function(x, type = c("tokens", "biterms"), threshold = 0, top_n = 5, ...){
   type <- match.arg(type)
   if(type %in% "biterms"){
@@ -374,6 +373,7 @@ terms.BTM <- function(x, type = c("tokens", "biterms"), threshold = 0, top_n = 5
 #' @export
 #' @seealso \code{\link{BTM}}, \code{\link{predict.BTM}}, \code{\link{logLik.BTM}}
 #' @examples 
+#' \dontshow{if(require(udpipe))\{}
 #' library(udpipe)
 #' data("brussels_reviews_anno", package = "udpipe")
 #' x <- subset(brussels_reviews_anno, language == "nl")
@@ -383,6 +383,7 @@ terms.BTM <- function(x, type = c("tokens", "biterms"), threshold = 0, top_n = 5
 #' str(biterms)
 #' tokens <- terms(x, type = "tokens")
 #' str(tokens)
+#' \dontshow{\} # End of main if statement running only if the required packages are installed}
 terms.data.frame <- function(x, type = c("tokens", "biterms"), window = 15, ...){
   type <- match.arg(type)
   stopifnot(window >= 1)
@@ -443,6 +444,7 @@ terms.data.frame <- function(x, type = c("tokens", "biterms"), window = 15, ...)
 #' }
 #' @export
 #' @examples
+#' \dontshow{if(require(udpipe))\{}
 #' library(udpipe)
 #' data("brussels_reviews_anno", package = "udpipe")
 #' x <- subset(brussels_reviews_anno, language == "nl")
@@ -452,6 +454,7 @@ terms.data.frame <- function(x, type = c("tokens", "biterms"), window = 15, ...)
 #' model  <- BTM(x, k = 5, iter = 5, trace = TRUE, detailed = TRUE)
 #' fit <- logLik(model)
 #' fit$ll
+#' \dontshow{\} # End of main if statement running only if the required packages are installed}
 logLik.BTM <- function(object, data = terms.BTM(object, type = 'biterms')$biterms, ...){
   stopifnot(inherits(data, "data.frame"))
   stopifnot(all(c(data[[1]], data[[2]]) %in% rownames(object$phi)))

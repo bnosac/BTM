@@ -26,6 +26,7 @@ of the biterms alongside the BTM model. Calculated as \code{sum(phi[term1, ] * p
 Get the likelihood how good biterms are fit by the BTM model
 }
 \examples{
+\dontshow{if(require(udpipe))\{}
 library(udpipe)
 data("brussels_reviews_anno", package = "udpipe")
 x <- subset(brussels_reviews_anno, language == "nl")
@@ -35,6 +36,7 @@ x <- x[, c("doc_id", "lemma")]
 model  <- BTM(x, k = 5, iter = 5, trace = TRUE, detailed = TRUE)
 fit <- logLik(model)
 fit$ll
+\dontshow{\} # End of main if statement running only if the required packages are installed}
 }
 \seealso{
 \code{\link{BTM}}, \code{\link{predict.BTM}}, \code{\link{terms.BTM}}

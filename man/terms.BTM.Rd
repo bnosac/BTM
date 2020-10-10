@@ -36,6 +36,7 @@ Note that a biterm is unordered, in the output of \code{type='biterms'} term1 is
 Get highest token probabilities for each topic or get biterms used in the model
 }
 \examples{
+\dontshow{if(require(udpipe))\{}
 library(udpipe)
 data("brussels_reviews_anno", package = "udpipe")
 x <- subset(brussels_reviews_anno, language == "nl")
@@ -47,6 +48,7 @@ terms(model, top_n = 10)
 terms(model, threshold = 0.01, top_n = +Inf)
 bi <- terms(model, type = "biterms")
 str(bi)
+\dontshow{\} # End of main if statement running only if the required packages are installed}
 }
 \seealso{
 \code{\link{BTM}}, \code{\link{predict.BTM}}, \code{\link{logLik.BTM}}

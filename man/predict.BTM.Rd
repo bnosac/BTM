@@ -34,6 +34,7 @@ To infer the topics in a document, it is assumed that the topic proportions of a
 is driven by the expectation of the topic proportions of biterms generated from the document.
 }
 \examples{
+\dontshow{if(require(udpipe))\{}
 library(udpipe)
 data("brussels_reviews_anno", package = "udpipe")
 x <- subset(brussels_reviews_anno, language == "nl")
@@ -44,6 +45,7 @@ scores <- predict(model, newdata = x, type = "sum_b")
 scores <- predict(model, newdata = x, type = "sub_w")
 scores <- predict(model, newdata = x, type = "mix")
 head(scores)
+\dontshow{\} # End of main if statement running only if the required packages are installed}
 }
 \references{
 Xiaohui Yan, Jiafeng Guo, Yanyan Lan, Xueqi Cheng. A Biterm Topic Model For Short Text. WWW2013,

@@ -43,6 +43,7 @@ This extracts words occurring in the neighbourhood of one another, within a cert
 The default setting provides the biterms used when fitting \code{\link{BTM}} with the default window parameter.
 }
 \examples{
+\dontshow{if(require(udpipe))\{}
 library(udpipe)
 data("brussels_reviews_anno", package = "udpipe")
 x <- subset(brussels_reviews_anno, language == "nl")
@@ -52,6 +53,7 @@ biterms <- terms(x, window = 15, type = "biterms")
 str(biterms)
 tokens <- terms(x, type = "tokens")
 str(tokens)
+\dontshow{\} # End of main if statement running only if the required packages are installed}
 }
 \seealso{
 \code{\link{BTM}}, \code{\link{predict.BTM}}, \code{\link{logLik.BTM}}
