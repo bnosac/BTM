@@ -92,6 +92,9 @@ A biterm is an unorder word pair where \code{'B C' = 'C B'}. Thus, the document 
 These biterms are used to create the model.
 }
 \examples{
+\dontshow{if(require(udpipe))
+\{
+}
 library(udpipe)
 data("brussels_reviews_anno", package = "udpipe")
 x <- subset(brussels_reviews_anno, language == "nl")
@@ -135,7 +138,10 @@ head(bitermset$biterms, 100)
 bitermset$n
 sum(biterms$cooc)
 
-
+\dontshow{
+\}
+# End of main if statement running only if the required packages are installed
+}
 \dontrun{
 ##
 ## Visualisation either using the textplot or the LDAvis package
