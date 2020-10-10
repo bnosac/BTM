@@ -63,6 +63,9 @@
 #' @export
 #' @seealso \code{\link{predict.BTM}}, \code{\link{terms.BTM}}, \code{\link{logLik.BTM}}
 #' @examples
+#' \dontshow{if(require(udpipe))
+#' \{
+#' }
 #' library(udpipe)
 #' data("brussels_reviews_anno", package = "udpipe")
 #' x <- subset(brussels_reviews_anno, language == "nl")
@@ -106,7 +109,10 @@
 #' bitermset$n
 #' sum(biterms$cooc)
 #' 
-#' 
+#' \dontshow{
+#' \}
+#' # End of main if statement running only if the required packages are installed
+#' }
 #' \dontrun{
 #' ##
 #' ## Visualisation either using the textplot or the LDAvis package

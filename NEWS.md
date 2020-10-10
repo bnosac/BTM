@@ -1,3 +1,7 @@
+### CHANGES IN BTM VERSION 0.3.3
+
+- Make example conditionally on availability of udpipe
+
 ### CHANGES IN BTM VERSION 0.3.2
 
 - Added terms.data.frame
