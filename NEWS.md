@@ -1,3 +1,7 @@
+### CHANGES IN BTM VERSION 0.3.4
+
+- Fix -Wself-assign issue on fedora-clang
+
 ### CHANGES IN BTM VERSION 0.3.3
 
 - Make example conditionally on availability of udpipe

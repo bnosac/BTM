@@ -172,7 +172,7 @@ Rcpp::List btm_biterms_text(Rcpp::CharacterVector x, int W, int win = 15) {
   Rcpp::CharacterVector doc_ids = x.attr("names");
   std::string context_id;
   
-  Rcpp::XPtr<Model> model(new Model(K = K, W = W, alpha = alpha, beta = beta, iter = iter, save_step = save_step, has_background = has_background), true);
+  Rcpp::XPtr<Model> model(new Model(K, W, alpha, beta, iter, save_step, has_background), true);
   std::string line;
   
   for (int idx = 0; idx < x.size(); idx++){
