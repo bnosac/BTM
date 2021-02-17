@@ -370,6 +370,7 @@ terms.BTM <- function(x, type = c("tokens", "biterms"), threshold = 0, top_n = 5
 #' }
 #' Note that a biterm is unordered, in the output of \code{type='biterms'} term1 is always smaller than or equal to term2.}
 #' }
+#' @note If \code{x} is a data.frame which has an attribute called 'terms', it just returns that \code{'terms'} attribute 
 #' @export
 #' @seealso \code{\link{BTM}}, \code{\link{predict.BTM}}, \code{\link{logLik.BTM}}
 #' @examples 
@@ -385,6 +386,11 @@ terms.BTM <- function(x, type = c("tokens", "biterms"), threshold = 0, top_n = 5
 #' str(tokens)
 #' \dontshow{\} # End of main if statement running only if the required packages are installed}
 terms.data.frame <- function(x, type = c("tokens", "biterms"), window = 15, ...){
+  v <- attr(x, "terms")
+  if(!is.null(v)){
+    return(v)
+  }
+  
   type <- match.arg(type)
   stopifnot(window >= 1)
   window <- as.integer(window)
@@ -427,6 +433,7 @@ terms.data.frame <- function(x, type = c("tokens", "biterms"), window = 15, ...)
   bit <- bit[c("n", "biterms")]
   bit
 }
+
 
 
 #' @title Get the likelihood of biterms in a BTM model

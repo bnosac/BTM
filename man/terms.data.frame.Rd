@@ -42,6 +42,9 @@ Note that a biterm is unordered, in the output of \code{type='biterms'} term1 is
 This extracts words occurring in the neighbourhood of one another, within a certain window range.
 The default setting provides the biterms used when fitting \code{\link{BTM}} with the default window parameter.
 }
+\note{
+If \code{x} is a data.frame which has an attribute called 'terms', it just returns that \code{'terms'} attribute
+}
 \examples{
 \dontshow{if(require(udpipe))\{}
 library(udpipe)

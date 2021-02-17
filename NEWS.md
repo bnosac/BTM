@@ -1,3 +1,7 @@
+### CHANGES IN BTM VERSION 0.3.5
+
+- terms.data.frame now returns the 'terms' attribute if it is part of x and it is not null, otherwise it calls the previously implemented terms.data.frame
+
 ### CHANGES IN BTM VERSION 0.3.4
 
 - Fix -Wself-assign issue on fedora-clang
