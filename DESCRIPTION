@@ -1,7 +1,7 @@
 Package: BTM
 Type: Package
 Title: Biterm Topic Models for Short Text
-Version: 0.3.5
+Version: 0.3.6
 Maintainer: Jan Wijffels <jwijffels@bnosac.be>
 Authors@R: c(
     person('Jan', 'Wijffels', role = c('aut', 'cre', 'cph'), email = 'jwijffels@bnosac.be', comment = "R wrapper"), 
@@ -17,7 +17,6 @@ Description: Biterm Topic Models find topics in collections of short texts.
 License: Apache License 2.0
 URL: https://github.com/bnosac/BTM
 Encoding: UTF-8
-LazyData: true
 Imports: Rcpp, utils
 Suggests: udpipe, data.table
 LinkingTo: Rcpp

@@ -1,3 +1,7 @@
+### CHANGES IN BTM VERSION 0.3.6
+
+- Remove LazyData from DESCRIPTION
+
 ### CHANGES IN BTM VERSION 0.3.5
 
 - terms.data.frame now returns the 'terms' attribute if it is part of x and it is not null, otherwise it calls the previously implemented terms.data.frame, this is done in order to circumvent the assumption that stats::terms always calls stats:::terms.default on the output of model.frame (which is used o.a in the hardhat package). While one can debate over what stats::terms should return, note that the use of terms in the BTM package is mimicked from similar functionality in the terms function from the topicmodels NLP package.
