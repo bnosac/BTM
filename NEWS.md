@@ -1,6 +1,7 @@
 ### CHANGES IN BTM VERSION 0.3.6
 
-- Remove LazyData from DESCRIPTION
+- Remove LazyData from DESCRIPTION as there is no data to be lazy about
+- Add plot example in README
 
 ### CHANGES IN BTM VERSION 0.3.5
 

@@ -23,6 +23,9 @@ More detail can be referred to the following paper:
 > https://github.com/xiaohuiyan/xiaohuiyan.github.io/blob/master/paper/BTM-WWW13.pdf
 
 
+![](tools/biterm-topic-model-example.png)
+
+
 ### Example
 
 ```
@@ -93,9 +96,21 @@ scores <- predict(model, newdata = x)
 # The first topic is set to a background topic that equals to the empirical word distribution. 
 # This can be used to filter out common words.
 set.seed(321)
-model  <- BTM(x, k = 5, beta = 0.01, background = TRUE, iter = 1000, trace = 100)
+model      <- BTM(x, k = 5, beta = 0.01, background = TRUE, iter = 1000, trace = 100)
 topicterms <- terms(model, top_n = 5)
 topicterms
+```
+
+### Visualisation of your model
+
+- Can be done using the textplot package (https://github.com/bnosac/textplot), which can be found at CRAN as well (https://cran.r-project.org/package=textplot) 
+- An example visualisation built on a model of all R packages from the Natural Language Processing and Machine Learning task views is shown above (see also https://www.bnosac.be/index.php/blog/98-biterm-topic-modelling-for-short-texts)
+
+```
+library(textplot)
+library(ggraph)
+library(concaveman)
+plot(model)
 ```
 
 ### Provide your own set of biterms
@@ -127,8 +142,8 @@ biterms <- biterms[, cooccurrence(x = lemma,
                    
 ## Build the model
 set.seed(123456)
-x <- subset(anno, upos %in% c("NOUN", "PROPN", "ADJ"))
-x <- x[, c("doc_id", "lemma")]
+x     <- subset(anno, upos %in% c("NOUN", "PROPN", "ADJ"))
+x     <- x[, c("doc_id", "lemma")]
 model <- BTM(x, k = 5, beta = 0.01, iter = 2000, background = TRUE, 
              biterms = biterms, trace = 100)
 topicterms <- terms(model, top_n = 5)
@@ -166,8 +181,8 @@ biterms <- subset(biterms, !term1 %in% exclude & !term2 %in% exclude)
 
 ## Put in x only terms whch were used in the biterms object such that frequency stats of terms can be computed in BTM
 anno <- anno[, keep := relevant | (token_id %in% head_token_id[relevant == TRUE]), by = list(doc_id, paragraph_id, sentence_id)]
-x <- subset(anno, keep == TRUE, select = c("doc_id", "lemma"))
-x <- subset(x, !lemma %in% exclude)
+x    <- subset(anno, keep == TRUE, select = c("doc_id", "lemma"))
+x    <- subset(x, !lemma %in% exclude)
 
 ## Build the topic model
 model <- BTM(data = x, 
