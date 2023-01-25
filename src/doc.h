@@ -22,7 +22,7 @@ public:
   
   const vector<int>& get_ws() const {return ws;}
   
-  const int get_w(int i) const {
+  int get_w(int i) const {
 	assert(i < ((int)ws.size()));
 	return ws[i];
   }
