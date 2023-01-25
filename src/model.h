@@ -49,12 +49,12 @@ public:
   }
   
   // run estimate procedures
-  void run(string docs_pt, string res_dir);
+  void run(string doc_pt, string res_dir);
   
 //private:
   // intialize memeber varibles and biterms
   void model_init();		// load from docs
-  void load_docs(string docs_pt);
+  void load_docs(string dfile);
   
   // update estimate of a biterm
   void update_biterm(Biterm& bi);
