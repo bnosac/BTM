@@ -126,9 +126,9 @@ public:
 	}
   }
   
-  const int rows() const {return array.size();}
-  const int size() const {return rows();}
-  const int cols() const {return rows()?array[0].size():0;}
+  int rows() const {return array.size();}
+  int size() const {return rows();}
+  int cols() const {return rows()?array[0].size():0;}
 
   Pvec<T> &operator[] (int m){
 	if (m >= (int)array.size())
