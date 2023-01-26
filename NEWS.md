@@ -1,3 +1,7 @@
+### CHANGES IN BTM VERSION 0.3.7
+
+- Incorporate clang-detected readability fixes readability-inconsistent-declaration-parameter-name and readability-const-return-type by @MichaelChirico
+
 ### CHANGES IN BTM VERSION 0.3.6
 
 - Remove LazyData from DESCRIPTION as there is no data to be lazy about
