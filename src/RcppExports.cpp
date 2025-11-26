@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // btm
 SEXP btm(Rcpp::List biterms, Rcpp::CharacterVector x, int K, int W, double alpha, double beta, int iter, int win, bool background, int trace);
 RcppExport SEXP _BTM_btm(SEXP bitermsSEXP, SEXP xSEXP, SEXP KSEXP, SEXP WSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP iterSEXP, SEXP winSEXP, SEXP backgroundSEXP, SEXP traceSEXP) {

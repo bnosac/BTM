@@ -1,7 +1,7 @@
 Package: BTM
 Type: Package
 Title: Biterm Topic Models for Short Text
-Version: 0.3.7
+Version: 0.3.8
 Maintainer: Jan Wijffels <jwijffels@bnosac.be>
 Authors@R: c(
     person('Jan', 'Wijffels', role = c('aut', 'cre', 'cph'), email = 'jwijffels@bnosac.be', comment = "R wrapper"), 
@@ -20,4 +20,4 @@ Encoding: UTF-8
 Imports: Rcpp, utils
 Suggests: udpipe, data.table
 LinkingTo: Rcpp
-RoxygenNote: 7.1.2
+RoxygenNote: 7.3.2

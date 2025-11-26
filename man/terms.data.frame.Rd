@@ -22,20 +22,19 @@
 \value{
 Depending if type is set to 'tokens' or 'biterms' the following is returned:
 \itemize{
-\item{If \code{type='tokens'}: }{a list containing 2 elements: 
+\item If \code{type='tokens'}: a list containing 2 elements: 
 \itemize{
 \item \code{n} which indicates the number of tokens
 \item \code{tokens} which is a data.frame with columns id, token and freq, 
 indicating for all tokens found in the data the frequency of occurrence
 }
-}
-\item{If \code{type='biterms'}: }{a list containing 2 elements: 
+\item If \code{type='biterms'}: a list containing 2 elements: 
 \itemize{
 \item \code{n} which indicates the number of biterms used to train the model
 \item \code{biterms} which is a data.frame with columns term1 and term2, 
 indicating all biterms found in the data. The same biterm combination can occur several times.
 }
-Note that a biterm is unordered, in the output of \code{type='biterms'} term1 is always smaller than or equal to term2.}
+Note that a biterm is unordered, in the output of \code{type='biterms'} term1 is always smaller than or equal to term2.
 }
 }
 \description{

@@ -20,16 +20,16 @@
 \value{
 Depending if type is set to 'tokens' or 'biterms' the following is returned:
 \itemize{
-\item{If \code{type='tokens'}: }{Get the probability of the token given the topic P(w|z). 
+\item If \code{type='tokens'}: Get the probability of the token given the topic P(w|z). 
 It returns a list of data.frames (one for each topic) where each data.frame contains columns token and probability ordered from high to low.
-The list is the same length as the number of topics.}
-\item{If \code{type='biterms'}: }{a list containing 2 elements: 
+The list is the same length as the number of topics.
+\item If \code{type='biterms'}: a list containing 2 elements: 
 \itemize{
 \item \code{n} which indicates the number of biterms used to train the model
 \item \code{biterms} which is a data.frame with columns term1, term2 and topic, 
 indicating for all biterms found in the data the topic to which the biterm is assigned to
 }
-Note that a biterm is unordered, in the output of \code{type='biterms'} term1 is always smaller than or equal to term2.}
+Note that a biterm is unordered, in the output of \code{type='biterms'} term1 is always smaller than or equal to term2.
 }
 }
 \description{

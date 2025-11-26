@@ -1,3 +1,7 @@
+### CHANGES IN BTM VERSION 0.3.8
+
+- fix some R CMD check NOTEs about the use of itemize in the documentation
+
 ### CHANGES IN BTM VERSION 0.3.7
 
 - Incorporate clang-detected readability fixes readability-inconsistent-declaration-parameter-name and readability-const-return-type by @MichaelChirico
